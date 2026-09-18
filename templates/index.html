@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mikrotik Invoice</title>
+<style>
+body { font-family: Arial; background:#f4f6f8; }
+.card {
+  background:white; margin:10px; padding:12px;
+  border-radius:10px; box-shadow:0 2px 6px #ccc;
+}
+button {
+  width:100%; padding:10px; margin-top:8px;
+  border:none; border-radius:8px;
+  background:#2e86de; color:white;
+}
+</style>
+</head>
+<body>
+
+<h3 style="text-align:center">📱 Mikrotik Invoice</h3>
+
+{% if not mikrotik %}
+<p style="color:red;text-align:center;">
+{% set online = routers_status | selectattr('status','equalto','online') | list | length %}
+
+<h4>
+  📱 Mikrotik Invoice
+  {% if online > 0 %}
+    <span class="badge badge-success">
+      🟢 ONLINE ({{ online }} Router)
+    </span>
+  {% else %}
+    <span class="badge badge-danger">
+      🔴 MODE OFFLINE (Mikrotik tidak terhubung)
+    </span>
+  {% endif %}
+</h4>
+
+</p>
+{% endif %}
+
+{% for p in data %}
+<div class="card">
+  <b>{{ p.nama_pelanggan }}</b><br>
+  Paket: {{ p.paket }}<br>
+  Tagihan: {{ p.harga }}<br>
+  Usage: {{ p.usage_total }}
+
+  <button onclick="buatInvoice('{{ p.nama_pelanggan }}','{{ p.paket }}','{{ p.harga }}','{{ p.ip }}')">
+    🧾 Buat Invoice
+  </button>
+
+  <button onclick="cetakStruk('{{ p.nama_pelanggan }}','{{ p.paket }}','{{ p.harga }}','{{ p.ip }}')">
+    🖨️ Cetak Struk
+  </button>
+</div>
+{% endfor %}
+
+<script>
+function buatInvoice(nama,paket,harga,ip){
+  fetch("/invoice",{
+    method:"POST",
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({
+      nama_pelanggan:nama,
+      paket:paket,
+      harga:harga,
+      ip_mikrotik:ip
+    })
+  }).then(r=>r.json()).then(d=>{
+    alert("Invoice dibuat");
+  });
+}
+
+function cetakStruk(nama,paket,harga,ip){
+  fetch("/cetak",{
+    method:"POST",
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({
+      nama_pelanggan:nama,
+      paket:paket,
+      harga:harga,
+      ip_mikrotik:ip
+    })
+  }).then(()=>{
+    alert("Struk dicetak");
+  });
+}
+</script>
+
+</body>
+</html>

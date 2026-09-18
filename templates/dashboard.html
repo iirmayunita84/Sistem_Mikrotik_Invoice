@@ -1,0 +1,1318 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+{# =========================================================
+ISP BILLING SYSTEM
+DASHBOARD
+========================================================= #}
+
+<!-- =========================================================
+     LICENSE / TRIAL
+     ========================================================= -->
+
+{% if mode == "PREMIUM" %}
+
+<div class="card shadow-lg mb-4 border-0 premium-glow"
+     style="background:linear-gradient(135deg,#0f2027,#203a43,#2c5364);
+            color:white;">
+
+<div class="card-body">
+
+    <div class="d-flex justify-content-between
+                align-items-center flex-wrap">
+
+        <div>
+
+            <h3 class="mb-1 font-weight-bold">
+                <i class="fas fa-crown text-warning mr-1"></i>
+                SUPER PREMIUM ISP
+            </h3>
+
+            <small class="text-light">
+                Sistem Billing & Manajemen Pelanggan MikroTik
+            </small>
+
+        </div>
+
+        <div class="mt-2">
+
+            <a href="{{ url_for('auth.aktivasi') }}"
+               class="btn btn-warning font-weight-bold">
+
+                <i class="fas fa-key mr-1"></i>
+                Aktivasi Lisensi
+
+            </a>
+
+        </div>
+
+    </div>
+
+
+    <hr style="border-color:rgba(255,255,255,.2);">
+
+
+    <div class="row text-center">
+
+        <!-- DEVICE -->
+
+        <div class="col-md-4 mb-3">
+
+            <div class="text-light small">
+                DEVICE ID
+            </div>
+
+            <code style="color:#00ffcc;">
+                {{ device_id }}
+            </code>
+
+        </div>
+
+
+        <!-- STATUS -->
+
+        <div class="col-md-4 mb-3">
+
+            <div class="text-light small">
+                STATUS LISENSI
+            </div>
+
+            <span class="badge badge-success p-2">
+                <i class="fas fa-check-circle mr-1"></i>
+                LISENSI AKTIF
+            </span>
+
+        </div>
+
+
+        <!-- EXPIRED -->
+
+        <div class="col-md-4 mb-3">
+
+            <div class="text-light small">
+                MASA BERLAKU
+            </div>
+
+            {% if license_info.expired
+                  and license_info.expired != "LIFETIME" %}
+
+                <strong style="color:#00ffcc;">
+                    {{ license_info.expired }}
+                </strong>
+
+            {% else %}
+
+                <strong style="color:#00ffcc;">
+                    PERMANEN
+                </strong>
+
+            {% endif %}
+
+        </div>
+
+    </div>
+
+
+    <div class="text-center mt-2">
+
+        <span class="badge badge-dark p-2">
+
+            <i class="far fa-clock mr-1"></i>
+
+            <span id="jamSekarang">
+                Memuat...
+            </span>
+
+        </span>
+
+    </div>
+
+</div>
+
+
+</div>
+
+{% elif mode == "TRIAL" %}
+
+<div class="card shadow mb-4 border-warning">
+
+<div class="card-body text-center">
+
+    <h4 class="text-warning font-weight-bold">
+
+        <i class="fas fa-flask mr-1"></i>
+        MODE TRIAL
+
+    </h4>
+
+    <p class="mb-2">
+
+        Sisa waktu:
+
+        <strong>
+            {{ sisa_hari or 0 }} hari
+        </strong>
+
+    </p>
+
+    <p class="mb-3">
+
+        Device ID:<br>
+
+        <code>
+            {{ device_id }}
+        </code>
+
+    </p>
+
+    <a href="{{ url_for('auth.aktivasi') }}"
+       class="btn btn-warning font-weight-bold">
+
+        <i class="fas fa-unlock mr-1"></i>
+        Upgrade ke Premium
+
+    </a>
+
+</div>
+
+</div>
+
+{% elif mode == "LOCK" %}
+
+<div class="card shadow mb-4 border-danger">
+
+<div class="card-body text-center">
+
+    <h4 class="text-danger font-weight-bold">
+
+        <i class="fas fa-lock mr-1"></i>
+        TRIAL BERAKHIR
+
+    </h4>
+
+    <p>
+        Lisensi tidak aktif.
+    </p>
+
+    <p>
+
+        Device ID:<br>
+
+        <code>
+            {{ device_id }}
+        </code>
+
+    </p>
+
+    <a href="{{ url_for('auth.aktivasi') }}"
+       class="btn btn-danger font-weight-bold">
+
+        <i class="fas fa-key mr-1"></i>
+        Aktivasi Sekarang
+
+    </a>
+
+</div>
+
+
+</div>
+
+{% endif %}
+
+{% if mode != "LOCK" %}
+
+<!-- =========================================================
+     DASHBOARD HEADER
+     ========================================================= -->
+
+<div class="d-flex justify-content-between
+            align-items-center flex-wrap mb-4">
+
+<div>
+
+    <h3 class="mb-1 font-weight-bold">
+
+        <i class="fas fa-tachometer-alt text-primary mr-1"></i>
+
+        Dashboard ISP
+
+    </h3>
+
+    <small class="text-muted">
+
+        Monitoring pelanggan, tagihan dan MikroTik
+
+    </small>
+
+</div>
+
+
+<div class="mt-2">
+
+    <a href="/sinkron"
+       class="btn btn-primary">
+
+        <i class="fas fa-sync-alt mr-1"></i>
+        Sinkronisasi
+
+    </a>
+
+</div>
+
+
+</div>
+
+<!-- =========================================================
+     KONTROL CEPAT
+     ========================================================= -->
+
+<div class="card shadow-sm mb-4">
+
+<div class="card-header bg-white">
+
+    <h5 class="mb-0 font-weight-bold">
+
+        <i class="fas fa-bolt text-warning mr-1"></i>
+        Kontrol Cepat
+
+    </h5>
+
+</div>
+
+
+<div class="card-body">
+
+    <div class="row">
+
+        <div class="col-lg-3 col-md-6 mb-2">
+
+            <a href="/sinkron"
+               class="btn btn-primary btn-block">
+
+                <i class="fas fa-sync-alt mr-1"></i>
+                Sinkron Router
+
+            </a>
+
+        </div>
+
+
+        <div class="col-lg-3 col-md-6 mb-2">
+
+            <a href="/wa-reminder/-3"
+               class="btn btn-info btn-block">
+
+                <i class="fab fa-whatsapp mr-1"></i>
+                WA H-3
+
+            </a>
+
+        </div>
+
+
+        <div class="col-lg-3 col-md-6 mb-2">
+
+            <a href="/wa-reminder/-1"
+               class="btn btn-warning btn-block">
+
+                <i class="fab fa-whatsapp mr-1"></i>
+                WA H-1
+
+            </a>
+
+        </div>
+
+
+        <div class="col-lg-3 col-md-6 mb-2">
+
+            <a href="/wa-reminder/0"
+               class="btn btn-danger btn-block">
+
+                <i class="fab fa-whatsapp mr-1"></i>
+                WA Hari Ini
+
+            </a>
+
+        </div>
+
+    </div>
+
+
+    <div class="row mt-2">
+
+        <div class="col-lg-3 col-md-6 mb-2">
+
+            <a href="/auto-blokir"
+               class="btn btn-danger btn-block">
+
+                <i class="fas fa-ban mr-1"></i>
+                Auto Blokir
+
+            </a>
+
+        </div>
+
+
+        <div class="col-lg-3 col-md-6 mb-2">
+
+            <a href="/reset-bulanan"
+               class="btn btn-warning btn-block">
+
+                <i class="fas fa-redo mr-1"></i>
+                Reset Bulanan
+
+            </a>
+
+        </div>
+
+
+        <div class="col-lg-3 col-md-6 mb-2">
+
+            <a href="/pelanggan"
+               class="btn btn-success btn-block">
+
+                <i class="fas fa-users mr-1"></i>
+                Pelanggan
+
+            </a>
+
+        </div>
+
+
+        <div class="col-lg-3 col-md-6 mb-2">
+
+            <a href="/tagihan"
+               class="btn btn-secondary btn-block">
+
+                <i class="fas fa-file-invoice mr-1"></i>
+                Tagihan
+
+            </a>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+</div>
+
+<!-- =========================================================
+     STATISTIK PELANGGAN
+     ========================================================= -->
+
+<div class="row">
+
+
+<!-- TOTAL -->
+
+<div class="col-xl-3 col-md-6 mb-3">
+
+    <div class="card shadow-sm border-left-primary h-100">
+
+        <div class="card-body">
+
+            <div class="text-muted small font-weight-bold">
+                TOTAL PELANGGAN
+            </div>
+
+            <h2 class="font-weight-bold text-primary mb-1">
+                {{ total_pelanggan or 0 }}
+            </h2>
+
+            <small class="text-muted">
+                Semua pelanggan terdaftar
+            </small>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- AKTIF -->
+
+<div class="col-xl-3 col-md-6 mb-3">
+
+    <div class="card shadow-sm border-left-success h-100">
+
+        <div class="card-body">
+
+            <div class="text-muted small font-weight-bold">
+                PELANGGAN AKTIF
+            </div>
+
+            <h2 class="font-weight-bold text-success mb-1">
+                {{ pelanggan_aktif or 0 }}
+            </h2>
+
+            <small class="text-muted">
+                Layanan aktif
+            </small>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- ISOLIR -->
+
+<div class="col-xl-3 col-md-6 mb-3">
+
+    <div class="card shadow-sm border-left-danger h-100">
+
+        <div class="card-body">
+
+            <div class="text-muted small font-weight-bold">
+                PELANGGAN ISOLIR
+            </div>
+
+            <h2 class="font-weight-bold text-danger mb-1">
+                {{ pelanggan_isolir or 0 }}
+            </h2>
+
+            <small class="text-muted">
+                Akses internet diblokir
+            </small>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- JATUH TEMPO -->
+
+<div class="col-xl-3 col-md-6 mb-3">
+
+    <div class="card shadow-sm border-left-warning h-100">
+
+        <div class="card-body">
+
+            <div class="text-muted small font-weight-bold">
+                JATUH TEMPO
+            </div>
+
+            <h2 class="font-weight-bold text-warning mb-1">
+                {{ pelanggan_jatuh_tempo or 0 }}
+            </h2>
+
+            <small class="text-muted">
+                Perlu ditindaklanjuti
+            </small>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+</div>
+
+<!-- =========================================================
+     KEUANGAN
+     ========================================================= -->
+
+<div class="row">
+
+<!-- TOTAL TAGIHAN -->
+
+<div class="col-md-4 mb-3">
+
+    <div class="card shadow-sm h-100">
+
+        <div class="card-body">
+
+            <div class="text-muted small font-weight-bold">
+                TOTAL TAGIHAN
+            </div>
+
+            <h3 class="font-weight-bold mb-1">
+
+                Rp {{ "{:,}".format(total_tagihan or 0) }}
+
+            </h3>
+
+            <small class="text-muted">
+                Nilai tagihan
+            </small>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- SUDAH BAYAR -->
+
+<div class="col-md-4 mb-3">
+
+    <div class="card shadow-sm border-left-success h-100">
+
+        <div class="card-body">
+
+            <div class="text-muted small font-weight-bold">
+                SUDAH BAYAR
+            </div>
+
+            <h3 class="font-weight-bold
+                       text-success mb-1">
+
+                Rp {{ "{:,}".format(total_sudah_bayar or 0) }}
+
+            </h3>
+
+            <small class="text-muted">
+                Pembayaran diterima
+            </small>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- BELUM BAYAR -->
+
+<div class="col-md-4 mb-3">
+
+    <div class="card shadow-sm border-left-danger h-100">
+
+        <div class="card-body">
+
+            <div class="text-muted small font-weight-bold">
+                BELUM BAYAR
+            </div>
+
+            <h3 class="font-weight-bold
+                       text-danger mb-1">
+
+                Rp {{ "{:,}".format(total_belum_bayar or 0) }}
+
+            </h3>
+
+            <small class="text-muted">
+                Piutang pelanggan
+            </small>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+</div>
+
+<!-- =========================================================
+     STATUS ROUTER
+     ========================================================= -->
+
+<div class="card shadow-sm mb-4">
+
+<div class="card-header bg-white">
+
+    <div class="d-flex justify-content-between
+                align-items-center">
+
+        <h5 class="mb-0 font-weight-bold">
+
+            <i class="fas fa-network-wired
+                      text-primary mr-1"></i>
+
+            Status MikroTik
+
+        </h5>
+
+
+        <a href="/mikrotik"
+           class="btn btn-sm btn-primary">
+
+            <i class="fas fa-cog mr-1"></i>
+            Kelola Router
+
+        </a>
+
+    </div>
+
+</div>
+
+
+<div class="card-body p-0">
+
+    <div class="table-responsive">
+
+        <table class="table table-hover mb-0">
+
+            <thead class="thead-light">
+
+                <tr>
+
+                    <th class="pl-3">
+                        No
+                    </th>
+
+                    <th>
+                        Router
+                    </th>
+
+                    <th>
+                        Host
+                    </th>
+
+                    <th>
+                        Status
+                    </th>
+
+                </tr>
+
+            </thead>
+
+
+            <tbody>
+
+            {% if routers_status %}
+
+                {% for r in routers_status %}
+
+                <tr>
+
+                    <td class="pl-3">
+                        {{ loop.index }}
+                    </td>
+
+                    <td class="font-weight-bold">
+                        {{ r.label or "-" }}
+                    </td>
+
+                    <td>
+                        <code>
+                            {{ r.host or "-" }}
+                        </code>
+                    </td>
+
+                    <td>
+
+                        {% if (r.status or "")|upper
+                              in ["ONLINE","AKTIF","CONNECTED"] %}
+
+                            <span class="badge badge-success">
+
+                                <i class="fas fa-circle mr-1"
+                                   style="font-size:7px;"></i>
+
+                                ONLINE
+
+                            </span>
+
+                        {% else %}
+
+                            <span class="badge badge-danger">
+
+                                <i class="fas fa-circle mr-1"
+                                   style="font-size:7px;"></i>
+
+                                {{ r.status or "OFFLINE" }}
+
+                            </span>
+
+                        {% endif %}
+
+                    </td>
+
+                </tr>
+
+                {% endfor %}
+
+            {% else %}
+
+                <tr>
+
+                    <td colspan="4"
+                        class="text-center text-muted py-4">
+
+                        <i class="fas fa-network-wired
+                                  fa-2x mb-2"></i>
+
+                        <br>
+
+                        Belum ada router MikroTik.
+
+                    </td>
+
+                </tr>
+
+            {% endif %}
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+</div>
+
+
+</div>
+
+<!-- =========================================================
+     JATUH TEMPO
+     ========================================================= -->
+
+{% if pelanggan_jatuh_tempo_list %}
+
+<div class="card shadow-sm border-warning mb-4">
+
+
+<div class="card-header bg-warning">
+
+    <h5 class="mb-0 font-weight-bold">
+
+        <i class="fas fa-exclamation-triangle mr-1"></i>
+
+        Pelanggan Perlu Perhatian
+
+    </h5>
+
+</div>
+
+
+<div class="card-body p-0">
+
+    <div class="table-responsive">
+
+        <table class="table table-hover mb-0">
+
+            <thead class="thead-light">
+
+                <tr>
+
+                    <th class="pl-3">
+                        No
+                    </th>
+
+                    <th>
+                        Nama
+                    </th>
+
+                    <th>
+                        Paket
+                    </th>
+
+                    <th>
+                        Jatuh Tempo
+                    </th>
+
+                    <th>
+                        Status
+                    </th>
+
+                </tr>
+
+            </thead>
+
+
+            <tbody>
+
+            {% for p in pelanggan_jatuh_tempo_list %}
+
+                <tr>
+
+                    <td class="pl-3">
+                        {{ loop.index }}
+                    </td>
+
+                    <td class="font-weight-bold">
+                        {{ p.nama or "-" }}
+                    </td>
+
+                    <td>
+                        {{ p.paket or "-" }}
+                    </td>
+
+                    <td>
+                        {{ p.jatuh_tempo or p.due or "-" }}
+                    </td>
+
+                    <td>
+
+                        {% set st =
+                            (p.status or "")|upper %}
+
+
+                        {% if st == "ISOLIR" %}
+
+                            <span class="badge badge-danger">
+                                ISOLIR
+                            </span>
+
+                        {% elif st in
+                              ["JATUH TEMPO","TERLAMBAT"] %}
+
+                            <span class="badge badge-warning">
+                                JATUH TEMPO
+                            </span>
+
+                        {% else %}
+
+                            <span class="badge badge-info">
+                                {{ p.status or "-" }}
+                            </span>
+
+                        {% endif %}
+
+                    </td>
+
+                </tr>
+
+            {% endfor %}
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+</div>
+```
+
+</div>
+
+{% endif %}
+
+<!-- =========================================================
+     CONNECTION & SYSTEM
+     ========================================================= -->
+
+<div class="row">
+
+<!-- CONNECTION -->
+
+<div class="col-md-6 mb-4">
+
+    <div class="card shadow-sm h-100">
+
+        <div class="card-header bg-white">
+
+            <h5 class="mb-0 font-weight-bold">
+
+                <i class="fas fa-globe
+                          text-primary mr-1"></i>
+
+                Jenis Koneksi
+
+            </h5>
+
+        </div>
+
+
+        <div class="card-body">
+
+            <div class="row text-center">
+
+                <div class="col-6">
+
+                    <div class="text-primary"
+                         style="font-size:32px;
+                                font-weight:700;">
+
+                        {{ total_dhcp or 0 }}
+
+                    </div>
+
+                    <div class="font-weight-bold">
+                        DHCP
+                    </div>
+
+                    <small class="text-muted">
+                        Static Lease
+                    </small>
+
+                </div>
+
+
+                <div class="col-6">
+
+                    <div class="text-success"
+                         style="font-size:32px;
+                                font-weight:700;">
+
+                        {{ total_pppoe or 0 }}
+
+                    </div>
+
+                    <div class="font-weight-bold">
+                        PPPoE
+                    </div>
+
+                    <small class="text-muted">
+                        User PPPoE
+                    </small>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+
+<!-- SYSTEM -->
+
+<div class="col-md-6 mb-4">
+
+    <div class="card shadow-sm h-100">
+
+        <div class="card-header bg-white">
+
+            <h5 class="mb-0 font-weight-bold">
+
+                <i class="fas fa-server
+                          text-primary mr-1"></i>
+
+                Status Sistem
+
+            </h5>
+
+        </div>
+
+
+        <div class="card-body">
+
+            <div class="d-flex
+                        justify-content-between
+                        mb-3">
+
+                <span>
+                    <i class="fas fa-bolt
+                              text-success mr-2"></i>
+                    Billing
+                </span>
+
+                <span class="badge badge-success">
+                    ONLINE
+                </span>
+
+            </div>
+
+
+            <div class="d-flex
+                        justify-content-between
+                        mb-3">
+
+                <span>
+                    <i class="fas fa-database
+                              text-primary mr-2"></i>
+                    Database
+                </span>
+
+                <span class="badge badge-success">
+                    ONLINE
+                </span>
+
+            </div>
+
+
+            <div class="d-flex
+                        justify-content-between
+                        mb-3">
+
+                <span>
+                    <i class="fas fa-clock
+                              text-warning mr-2"></i>
+                    Scheduler
+                </span>
+
+                <span class="badge badge-success">
+                    AKTIF
+                </span>
+
+            </div>
+
+
+            <div class="d-flex
+                        justify-content-between">
+
+                <span>
+                    <i class="fab fa-whatsapp
+                              text-success mr-2"></i>
+                    WhatsApp Reminder
+                </span>
+
+
+                {% if wa_status %}
+
+                    <span class="badge badge-success">
+                        AKTIF
+                    </span>
+
+                {% else %}
+
+                    <span class="badge badge-secondary">
+                        SIAP
+                    </span>
+
+                {% endif %}
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+</div>
+
+<!-- =========================================================
+     TRANSAKSI TERAKHIR
+     ========================================================= -->
+
+<div class="card shadow-sm mb-4">
+
+<div class="card-header bg-white">
+
+    <div class="d-flex
+                justify-content-between
+                align-items-center">
+
+        <h5 class="mb-0 font-weight-bold">
+
+            <i class="fas fa-receipt
+                      text-primary mr-1"></i>
+
+            Transaksi Terakhir
+
+        </h5>
+
+
+        <a href="/pembayaran"
+           class="btn btn-sm btn-primary">
+
+            Lihat Semua
+
+        </a>
+
+    </div>
+
+</div>
+
+
+<div class="card-body p-0">
+
+    <div class="table-responsive">
+
+        <table class="table table-hover mb-0">
+
+            <thead class="thead-light">
+
+                <tr>
+
+                    <th class="pl-3">
+                        No
+                    </th>
+
+                    <th>
+                        Tanggal
+                    </th>
+
+                    <th>
+                        Nama
+                    </th>
+
+                    <th>
+                        Paket
+                    </th>
+
+                    <th class="text-right">
+                        Nominal
+                    </th>
+
+                    <th class="text-center">
+                        Status
+                    </th>
+
+                </tr>
+
+            </thead>
+
+
+            <tbody>
+
+            {% if transaksi %}
+
+                {% for t in transaksi[:5] %}
+
+                <tr>
+
+                    <td class="pl-3">
+                        {{ loop.index }}
+                    </td>
+
+                    <td>
+                        {{ t.tanggal or "-" }}
+                    </td>
+
+                    <td class="font-weight-bold text-primary">
+                        {{ t.nama or "-" }}
+                    </td>
+
+                    <td>
+                        {{ t.paket or "-" }}
+                    </td>
+
+                    <td class="text-right font-weight-bold">
+
+                        Rp {{ "{:,}".format(t.harga or 0) }}
+
+                    </td>
+
+                    <td class="text-center">
+
+                        {% if (t.status or "")|upper == "LUNAS" %}
+
+                            <span class="badge badge-success">
+                                LUNAS
+                            </span>
+
+                        {% else %}
+
+                            <span class="badge badge-danger">
+                                BELUM BAYAR
+                            </span>
+
+                        {% endif %}
+
+                    </td>
+
+                </tr>
+
+                {% endfor %}
+
+            {% else %}
+
+                <tr>
+
+                    <td colspan="6"
+                        class="text-center text-muted py-4">
+
+                        <i class="fas fa-receipt
+                                  fa-2x mb-2"></i>
+
+                        <br>
+
+                        Belum ada transaksi.
+
+                    </td>
+
+                </tr>
+
+            {% endif %}
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+</div>
+
+
+</div>
+
+<!-- =========================================================
+     FOOTER
+     ========================================================= -->
+
+<div class="text-center text-muted small mb-4">
+
+
+<strong>
+    ISP Billing
+</strong>
+
+• MikroTik Management System
+
+<br>
+
+<span id="jamFooter"></span>
+
+
+</div>
+
+{% endif %}
+
+<!-- =========================================================
+     JAM REALTIME
+     ========================================================= -->
+
+<script>
+
+function updateJamSekarang() {
+
+    const sekarang = new Date();
+
+    const waktu = sekarang.toLocaleString("id-ID", {
+
+        timeZone: "Asia/Jakarta",
+
+        day: "2-digit",
+        month: "2-digit",
+        year: "numeric",
+
+        hour: "2-digit",
+        minute: "2-digit",
+        second: "2-digit",
+
+        hour12: false
+
+    });
+
+
+    const hasil = waktu.replace(",", " •");
+
+
+    const elemen =
+        document.getElementById("jamSekarang");
+
+    if (elemen) {
+
+        elemen.innerHTML = hasil;
+
+    }
+
+
+    const footer =
+        document.getElementById("jamFooter");
+
+    if (footer) {
+
+        footer.innerHTML =
+            "Waktu Server: " + hasil;
+
+    }
+
+}
+
+
+updateJamSekarang();
+
+setInterval(updateJamSekarang, 1000);
+
+</script>
+
+{% endblock %}

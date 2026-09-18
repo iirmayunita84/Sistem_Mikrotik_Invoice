@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block content %}
+
+<h4>👥 Data Pelanggan</h4>
+
+<table class="table table-bordered table-sm">
+  <thead>
+    <tr>
+      <th>No</th>
+      <th>Nama</th>
+      <th>Paket</th>
+      <th>Harga</th>
+      <th>Status</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for p in pelanggan %}
+    <tr>
+      <td>{{ loop.index }}</td>
+      <td>{{ p.nama }}</td>
+      <td>{{ p.paket }}</td>
+      <td>Rp {{ "{:,}".format(p.harga or 0) }}</td>
+      <td>{{ p.status }}</td>
+    </tr>
+    {% else %}
+    <tr>
+      <td colspan="5" class="text-center text-muted">
+        Belum ada pelanggan
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+{% endblock %}

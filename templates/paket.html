@@ -1,0 +1,270 @@
+{% extends "base.html" %}
+
+{% block head %}
+<style>
+    .page-title {
+        font-weight: 700;
+        color: #1f2937;
+        margin-bottom: 4px;
+    }
+
+    .page-subtitle {
+        color: #6b7280;
+        margin-bottom: 0;
+    }
+
+    .stat-card {
+        background: #ffffff;
+        border: 1px solid #e5e7eb;
+        border-radius: 12px;
+        padding: 18px;
+        height: 100%;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+    }
+
+    .stat-label {
+        color: #6b7280;
+        font-size: 13px;
+        margin-bottom: 5px;
+    }
+
+    .stat-value {
+        color: #111827;
+        font-size: 24px;
+        font-weight: 700;
+    }
+
+    .content-card {
+        background: #ffffff;
+        border: 1px solid #e5e7eb;
+        border-radius: 12px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+        overflow: hidden;
+    }
+
+    .content-card-header {
+        padding: 18px 20px;
+        border-bottom: 1px solid #e5e7eb;
+        background: #ffffff;
+    }
+
+    .content-card-title {
+        margin: 0;
+        font-size: 17px;
+        font-weight: 700;
+        color: #1f2937;
+    }
+
+    .table {
+        margin-bottom: 0;
+    }
+
+    .table thead th {
+        background: #f8fafc;
+        color: #475569;
+        font-size: 12px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: .03em;
+        border-bottom: 1px solid #e5e7eb;
+        padding: 13px 15px;
+        white-space: nowrap;
+    }
+
+    .table tbody td {
+        padding: 14px 15px;
+        vertical-align: middle;
+        color: #374151;
+        border-color: #f1f5f9;
+    }
+
+    .table tbody tr:hover {
+        background: #f8fafc;
+    }
+
+    .paket-name {
+        font-weight: 600;
+        color: #111827;
+    }
+
+    .empty-state {
+        padding: 55px 20px;
+        text-align: center;
+        color: #6b7280;
+    }
+
+    .empty-icon {
+        font-size: 42px;
+        margin-bottom: 12px;
+        opacity: .7;
+    }
+
+    .currency {
+        font-weight: 600;
+        color: #111827;
+    }
+
+    .badge-soft {
+        display: inline-block;
+        padding: 5px 9px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 600;
+        background: #eff6ff;
+        color: #2563eb;
+    }
+</style>
+{% endblock %}
+
+
+{% block content %}
+
+<div class="container-fluid">
+
+    <!-- HEADER -->
+    <div class="d-flex flex-wrap justify-content-between align-items-center mb-4">
+        <div>
+            <h3 class="page-title">
+                <i class="fas fa-box-open me-2"></i>
+                Paket Internet
+            </h3>
+            <p class="page-subtitle">
+                Daftar paket internet berdasarkan pelanggan yang terdaftar.
+            </p>
+        </div>
+
+        <div class="mt-3 mt-md-0">
+            <a href="{{ url_for('misc.dashboard') }}"
+               class="btn btn-outline-secondary">
+                <i class="fas fa-arrow-left me-1"></i>
+                Dashboard
+            </a>
+        </div>
+    </div>
+
+
+    <!-- STATISTIK -->
+    <div class="row g-3 mb-4">
+
+        <div class="col-md-4">
+            <div class="stat-card">
+                <div class="stat-label">
+                    Total Paket
+                </div>
+                <div class="stat-value">
+                    {{ paket_list|length }}
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="stat-card">
+                <div class="stat-label">
+                    Total Pelanggan
+                </div>
+                <div class="stat-value">
+                    {{ paket_list|sum(attribute='jumlah_pelanggan') }}
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="stat-card">
+                <div class="stat-label">
+                    Total Nilai Paket
+                </div>
+                <div class="stat-value">
+                    Rp {{ "{:,.0f}".format(paket_list|sum(attribute='total_nilai') or 0).replace(",", ".") }}
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+
+    <!-- TABEL PAKET -->
+    <div class="content-card">
+
+        <div class="content-card-header">
+            <h5 class="content-card-title">
+                <i class="fas fa-list me-2"></i>
+                Daftar Paket
+            </h5>
+        </div>
+
+        {% if paket_list %}
+
+        <div class="table-responsive">
+
+            <table class="table table-hover align-middle">
+
+                <thead>
+                    <tr>
+                        <th style="width: 60px;">No</th>
+                        <th>Nama Paket</th>
+                        <th class="text-center">Pelanggan</th>
+                        <th class="text-end">Nilai Paket</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+
+                {% for paket in paket_list %}
+
+                    <tr>
+
+                        <td class="text-muted">
+                            {{ loop.index }}
+                        </td>
+
+                        <td>
+                            <span class="paket-name">
+                                {{ paket.paket or "Tanpa Paket" }}
+                            </span>
+                        </td>
+
+                        <td class="text-center">
+                            <span class="badge-soft">
+                                {{ paket.jumlah_pelanggan }} pelanggan
+                            </span>
+                        </td>
+
+                        <td class="text-end currency">
+                            Rp {{ "{:,.0f}".format(paket.total_nilai or 0).replace(",", ".") }}
+                        </td>
+
+                    </tr>
+
+                {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+        {% else %}
+
+        <div class="empty-state">
+
+            <div class="empty-icon">
+                <i class="fas fa-box-open"></i>
+            </div>
+
+            <h5 class="mb-2">
+                Belum Ada Paket
+            </h5>
+
+            <p class="mb-0">
+                Belum terdapat data paket dari pelanggan yang terdaftar.
+            </p>
+
+        </div>
+
+        {% endif %}
+
+    </div>
+
+</div>
+
+{% endblock %}

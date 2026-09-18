@@ -1,0 +1,1348 @@
+﻿
+{% extends "base.html" %}
+{% block content %}
+
+<a href="{{ url_for('misc.admin') }}" class="btn btn-secondary mb-3">
+    <i class="fas fa-arrow-left"></i> Kembali
+</a>
+
+<div class="card card-success">
+
+    <div class="card-header">
+        <h3 class="card-title">Form Tambah Pelanggan</h3>
+    </div>
+
+    <div class="card-body">
+
+        <form method="POST" id="formPelanggan">
+
+            <!-- ========================= -->
+            <!-- DATA PELANGGAN -->
+            <!-- ========================= -->
+
+            <div class="form-group">
+                <label>Nama Pelanggan</label>
+                <input
+                    type="text"
+                    name="nama"
+                    id="nama"
+                    class="form-control"
+                    required
+                >
+            </div>
+
+
+            <div class="form-group">
+                <label>Paket</label>
+                <input
+                    type="text"
+                    name="paket"
+                    id="paket"
+                    class="form-control"
+                    required
+                >
+            </div>
+
+
+            <div class="form-group">
+                <label>Harga</label>
+                <input
+                    type="number"
+                    name="harga"
+                    id="harga"
+                    class="form-control"
+                    min="0"
+                    required
+                >
+            </div>
+
+
+            <div class="form-group">
+                <label>No HP</label>
+                <input
+                    type="text"
+                    name="no_hp"
+                    id="no_hp"
+                    class="form-control"
+                    placeholder="Contoh: 081234567890"
+                >
+            </div>
+
+
+            <!-- ========================= -->
+            <!-- JATUH TEMPO -->
+            <!-- FORMAT: DD/MM/YYYY -->
+            <!-- ========================= -->
+
+            <div class="form-group">
+
+                <label>
+                    Jatuh Tempo
+                    <span class="text-danger">*</span>
+                </label>
+
+                <div class="input-group">
+
+                    <input
+                        type="text"
+                        name="jatuh_tempo"
+                        id="jatuh_tempo"
+                        class="form-control"
+                        placeholder="DD/MM/YYYY"
+                        maxlength="10"
+                        inputmode="numeric"
+                        autocomplete="off"
+                        required
+                    >
+
+                    <div class="input-group-append">
+
+						<button
+							type="button"
+							class="btn btn-outline-secondary"
+							id="btnKalender"
+							title="Pilih tanggal"
+						>
+							<i class="fas fa-calendar-alt"></i>
+						</button>
+
+                    </div>
+
+                </div>
+
+                <!--
+                    Input kalender hanya sebagai pemilih tanggal.
+                    Nilai internal browser tetap YYYY-MM-DD.
+                -->
+                <input
+                    type="date"
+                    id="kalender_jatuh_tempo"
+                    tabindex="-1"
+                    aria-hidden="true"
+                    style="
+                        position:absolute;
+                        width:1px;
+                        height:1px;
+                        opacity:0;
+                        pointer-events:none;
+                    "
+                >
+
+                <small class="form-text text-muted">
+                    Format: DD/MM/YYYY.
+                    Contoh: 10/05/2026 = 5 Oktober 2026.
+                </small>
+
+            </div>
+
+
+            <!-- ========================= -->
+            <!-- ROUTER -->
+            <!-- ========================= -->
+
+            <div class="form-group">
+
+                <label>
+                    Router MikroTik
+                    <span class="text-danger">*</span>
+                </label>
+
+                <select
+                    name="router_id"
+                    id="router_id"
+                    class="form-control"
+                    required
+                >
+
+                    <option value="">
+                        -- Pilih Router --
+                    </option>
+
+                    {% for r in mikrotik %}
+
+                    <option
+                        value="{{ r.id }}"
+                        data-host="{{ r.host }}"
+                    >
+                        {{ r.label }} ({{ r.host }})
+                    </option>
+
+                    {% endfor %}
+
+                </select>
+
+            </div>
+
+
+            <!-- ========================= -->
+            <!-- TIPE PELANGGAN -->
+            <!-- ========================= -->
+
+            <div class="form-group">
+
+                <label>
+                    Tipe Pelanggan
+                    <span class="text-danger">*</span>
+                </label>
+
+                <select
+                    name="tipe"
+                    id="tipePelanggan"
+                    class="form-control"
+                    required
+                >
+
+                    <option value="">
+                        -- Pilih Tipe --
+                    </option>
+
+                    <option value="DHCP">
+                        DHCP
+                    </option>
+
+                    <option value="PPPoE">
+                        PPPoE
+                    </option>
+
+                </select>
+
+            </div>
+
+
+            <!-- ========================= -->
+            <!-- BAGIAN DHCP -->
+            <!-- ========================= -->
+
+            <div id="dhcpFields" style="display:none;">
+
+                <div class="card card-info mb-3">
+
+                    <div class="card-header">
+
+                        <h3 class="card-title">
+                            Data DHCP
+                        </h3>
+
+                    </div>
+
+
+                    <div class="card-body">
+
+                        <div class="form-group">
+
+                            <label>
+                                IP Address
+                                <span class="text-danger">*</span>
+                            </label>
+
+                            <div class="input-group">
+
+                                <input
+                                    type="text"
+                                    name="ip_address"
+                                    id="ip_address"
+                                    class="form-control"
+                                    placeholder="Contoh: 192.168.3.9"
+                                >
+
+                                <div class="input-group-append">
+
+                                    <button
+                                        type="button"
+                                        class="btn btn-info"
+                                        id="btnCariDHCP"
+                                    >
+                                        Cari DHCP
+                                    </button>
+
+                                </div>
+
+                            </div>
+
+                            <small class="text-muted">
+                                Masukkan IP yang ada di DHCP Lease MikroTik.
+                            </small>
+
+                        </div>
+
+
+                        <div class="form-group">
+
+                            <label>
+                                MAC Address
+                                <span class="text-danger">*</span>
+                            </label>
+
+                            <input
+                                type="text"
+                                name="mac_address"
+                                id="mac_address"
+                                class="form-control"
+                                placeholder="Contoh: C8:3A:35:90:13:30"
+                            >
+
+                        </div>
+
+
+                        <div class="form-group">
+
+                            <label>
+                                Host / Hostname
+                            </label>
+
+                            <input
+                                type="text"
+                                name="host"
+                                id="host"
+                                class="form-control"
+                                placeholder="Contoh: Redmi-14C"
+                            >
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- ========================= -->
+            <!-- BAGIAN PPPOE -->
+            <!-- ========================= -->
+
+            <div id="pppoeFields" style="display:none;">
+
+                <div class="card card-warning mb-3">
+
+                    <div class="card-header">
+
+                        <h3 class="card-title">
+                            Data PPPoE
+                        </h3>
+
+                    </div>
+
+
+                    <div class="card-body">
+
+                        <div class="form-group">
+
+                            <label>
+                                PPPoE User
+                                <span class="text-danger">*</span>
+                            </label>
+
+                            <div class="input-group">
+
+                                <input
+                                    type="text"
+                                    name="pppoe_username"
+                                    id="pppoe_username"
+                                    class="form-control"
+                                    placeholder="Username PPPoE MikroTik"
+                                >
+
+                                <div class="input-group-append">
+
+                                    <button
+                                        type="button"
+                                        class="btn btn-warning"
+                                        id="btnCariPPPoE"
+                                    >
+                                        Cari PPPoE
+                                    </button>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+
+                        <div class="form-group">
+
+                            <label>
+                                PPPoE Pass
+                                <span class="text-danger">*</span>
+                            </label>
+
+                            <input
+                                type="text"
+                                name="pppoe_pass"
+                                id="pppoe_pass"
+                                class="form-control"
+                                placeholder="Password PPPoE"
+                            >
+
+                        </div>
+
+
+                        <div class="form-group">
+
+                            <label>
+                                PPPoE Profile
+                            </label>
+
+                            <input
+                                type="text"
+                                name="pppoe_profile"
+                                id="pppoe_profile"
+                                class="form-control"
+                                readonly
+                            >
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- ========================= -->
+            <!-- HASIL PENCARIAN -->
+            <!-- ========================= -->
+
+            <div id="hasilMikrotik" class="mt-3"></div>
+
+
+            <!-- ========================= -->
+            <!-- TOMBOL -->
+            <!-- ========================= -->
+
+            <button
+                type="submit"
+                class="btn btn-success"
+                id="btnSimpan"
+            >
+                Simpan Pelanggan
+            </button>
+
+            <a
+                href="{{ url_for('misc.admin') }}"
+                class="btn btn-secondary"
+            >
+                Batal
+            </a>
+
+        </form>
+
+    </div>
+
+</div>
+
+
+<script>
+
+document.addEventListener("DOMContentLoaded", function () {
+
+    // =====================================================
+    // ELEMENT
+    // =====================================================
+
+    const form =
+        document.getElementById("formPelanggan");
+
+    const tipe =
+        document.getElementById("tipePelanggan");
+
+    const dhcpFields =
+        document.getElementById("dhcpFields");
+
+    const pppoeFields =
+        document.getElementById("pppoeFields");
+
+    const routerId =
+        document.getElementById("router_id");
+
+    const ipAddress =
+        document.getElementById("ip_address");
+
+    const macAddress =
+        document.getElementById("mac_address");
+
+    const host =
+        document.getElementById("host");
+
+    const pppoeUsername =
+        document.getElementById("pppoe_username");
+
+    const pppoePass =
+        document.getElementById("pppoe_pass");
+
+    const pppoeProfile =
+        document.getElementById("pppoe_profile");
+
+    const hasil =
+        document.getElementById("hasilMikrotik");
+
+    const btnDHCP =
+        document.getElementById("btnCariDHCP");
+
+    const btnPPPoE =
+        document.getElementById("btnCariPPPoE");
+
+    const tanggalText =
+        document.getElementById("jatuh_tempo");
+
+    const kalender =
+        document.getElementById("kalender_jatuh_tempo");
+
+    const btnKalender =
+        document.getElementById("btnKalender");
+
+
+    // =====================================================
+    // FORMAT TANGGAL
+    // FORMAT RESMI APLIKASI:
+    // DD/MM/YYYY
+    // =====================================================
+
+    function formatTanggalInput(value) {
+
+        if (!value) {
+            return "";
+        }
+
+        // Hapus karakter selain angka
+        let angka =
+            value.replace(/\D/g, "");
+
+        // Maksimal 8 angka
+        angka =
+            angka.substring(0, 8);
+
+        // DD/MM/YYYY
+        if (angka.length <= 2) {
+
+            return angka;
+
+        }
+
+        if (angka.length <= 4) {
+
+            return (
+                angka.substring(0, 2) +
+                "/" +
+                angka.substring(2)
+            );
+
+        }
+
+        return (
+            angka.substring(0, 2) +
+            "/" +
+            angka.substring(2, 4) +
+            "/" +
+            angka.substring(4, 8)
+        );
+
+    }
+
+
+    // =====================================================
+    // VALIDASI DD/MM/YYYY
+    // =====================================================
+
+    function tanggalValid(value) {
+
+        if (!/^\d{2}\/\d{2}\/\d{4}$/.test(value)) {
+            return false;
+        }
+
+        const parts =
+            value.split("/");
+
+        const day =
+            parseInt(parts[0], 10);
+
+        const month =
+            parseInt(parts[1], 10);
+
+        const year =
+            parseInt(parts[2], 10);
+
+        if (
+            month < 1 ||
+            month > 12 ||
+            day < 1 ||
+            day > 31
+        ) {
+            return false;
+        }
+
+        const d =
+            new Date(
+                year,
+                month - 1,
+                day
+            );
+
+        return (
+            d.getFullYear() === year &&
+            d.getMonth() === month - 1 &&
+            d.getDate() === day
+        );
+
+    }
+
+
+    // =====================================================
+    // INPUT MANUAL
+    //
+    // Contoh:
+    // 05102026
+    //
+    // menjadi:
+    // 05/10/2026
+    // =====================================================
+
+    tanggalText.addEventListener(
+        "input",
+        function () {
+
+            this.value =
+                formatTanggalInput(
+                    this.value
+                );
+
+        }
+    );
+
+
+    // =====================================================
+    // KALENDER
+    //
+    // Aplikasi : DD/MM/YYYY
+    // Browser   : YYYY-MM-DD
+    // =====================================================
+
+    btnKalender.addEventListener(
+        "click",
+        function () {
+
+            const value =
+                tanggalText.value.trim();
+
+            /*
+             * Contoh:
+             *
+             * DD/MM/YYYY
+             * 05/10/2026
+             *
+             * menjadi:
+             *
+             * YYYY-MM-DD
+             * 2026-10-05
+             */
+
+            if (
+                /^\d{2}\/\d{2}\/\d{4}$/.test(value)
+            ) {
+
+                const parts =
+                    value.split("/");
+
+                const day =
+                    parts[0];
+
+                const month =
+                    parts[1];
+
+                const year =
+                    parts[2];
+
+                kalender.value =
+                    year +
+                    "-" +
+                    month +
+                    "-" +
+                    day;
+
+            }
+
+            /*
+             * Buka kalender browser.
+             */
+
+            if (
+                typeof kalender.showPicker === "function"
+            ) {
+
+                kalender.showPicker();
+
+            } else {
+
+                kalender.focus();
+                kalender.click();
+
+            }
+
+        }
+    );
+
+
+    // =====================================================
+    // SAAT TANGGAL DIPILIH DARI KALENDER
+    //
+    // Browser:
+    // YYYY-MM-DD
+    //
+    // Aplikasi:
+    // DD/MM/YYYY
+    // =====================================================
+
+    kalender.addEventListener(
+        "change",
+        function () {
+
+            if (!this.value) {
+                return;
+            }
+
+            const parts =
+                this.value.split("-");
+
+            if (parts.length !== 3) {
+                return;
+            }
+
+            const year =
+                parts[0];
+
+            const month =
+                parts[1];
+
+            const day =
+                parts[2];
+
+            tanggalText.value =
+                day +
+                "/" +
+                month +
+                "/" +
+                year;
+
+        }
+    );
+
+    // =====================================================
+    // VALIDASI SAAT FORM SUBMIT
+    // =====================================================
+
+    form.addEventListener(
+        "submit",
+        function (event) {
+
+            const value =
+                tanggalText.value.trim();
+
+            if (!tanggalValid(value)) {
+
+                event.preventDefault();
+
+                alert(
+                    "Format Jatuh Tempo harus DD/MM/YYYY.\n\n" +
+                    "Contoh: 10/05/2026 = 5 Oktober 2026."
+                );
+
+                tanggalText.focus();
+
+                return false;
+
+            }
+
+
+            // Cegah double submit
+            const btnSimpan =
+                document.getElementById("btnSimpan");
+
+            if (btnSimpan) {
+
+                btnSimpan.disabled = true;
+
+                btnSimpan.innerHTML =
+                    "Menyimpan...";
+
+            }
+
+        }
+    );
+
+
+    // =====================================================
+    // ATUR FORM BERDASARKAN TIPE
+    // =====================================================
+
+    function updateForm() {
+
+        const value =
+            tipe.value;
+
+        dhcpFields.style.display =
+            "none";
+
+        pppoeFields.style.display =
+            "none";
+
+        ipAddress.required =
+            false;
+
+        macAddress.required =
+            false;
+
+        pppoeUsername.required =
+            false;
+
+        pppoePass.required =
+            false;
+
+
+        if (value === "DHCP") {
+
+            dhcpFields.style.display =
+                "block";
+
+            ipAddress.required =
+                true;
+
+            macAddress.required =
+                true;
+
+        }
+
+
+        if (value === "PPPoE") {
+
+            pppoeFields.style.display =
+                "block";
+
+            pppoeUsername.required =
+                true;
+
+            pppoePass.required =
+                true;
+
+        }
+
+    }
+
+
+    tipe.addEventListener(
+        "change",
+        updateForm
+    );
+
+    updateForm();
+
+
+    // =====================================================
+    // FUNGSI ISI DATA DARI COMMENT
+    // =====================================================
+
+    function isiDariComment(comment) {
+
+        if (!comment) {
+            return;
+        }
+
+
+        // ==========================
+        // NAMA
+        // ==========================
+
+        let match =
+            comment.match(
+                /(?:^|;)nama:([^;]*)/i
+            );
+
+        if (
+            match &&
+            match[1].trim()
+        ) {
+
+            document.getElementById(
+                "nama"
+            ).value =
+                match[1].trim();
+
+        }
+
+
+        // ==========================
+        // PAKET
+        // ==========================
+
+        match =
+            comment.match(
+                /(?:^|;)paket:([^;]*)/i
+            );
+
+        if (
+            match &&
+            match[1].trim()
+        ) {
+
+            document.getElementById(
+                "paket"
+            ).value =
+                match[1].trim();
+
+        }
+
+
+        // ==========================
+        // HARGA
+        // ==========================
+
+        match =
+            comment.match(
+                /(?:^|;)harga:([^;]*)/i
+            );
+
+        if (
+            match &&
+            match[1].trim()
+        ) {
+
+            document.getElementById(
+                "harga"
+            ).value =
+                match[1].trim();
+
+        }
+
+
+        // ==========================
+        // NO HP
+        // ==========================
+
+        match =
+            comment.match(
+                /(?:^|;)no_hp:([^;]*)/i
+            );
+
+        if (
+            match &&
+            match[1].trim()
+        ) {
+
+            document.getElementById(
+                "no_hp"
+            ).value =
+                match[1].trim();
+
+        }
+
+
+        // ==========================
+        // DUE DATE
+        // ==========================
+
+        match =
+            comment.match(
+                /(?:^|;)due:([^;]*)/i
+            );
+
+        if (
+            match &&
+            match[1].trim()
+        ) {
+
+            let due =
+                match[1].trim();
+
+
+            /*
+             * FORMAT RESMI APLIKASI:
+             * DD/MM/YYYY
+             *
+             * Contoh:
+             * 05/10/2026
+             *
+             * Artinya:
+             * 5 Oktober 2026
+             */
+
+            if (
+                /^\d{2}\/\d{2}\/\d{4}$/.test(due)
+            ) {
+
+                /*
+                 * Data sudah menggunakan
+                 * format DD/MM/YYYY.
+                 */
+
+                tanggalText.value =
+                    due;
+
+                return;
+
+            }
+
+
+            /*
+             * FORMAT ISO:
+             * YYYY-MM-DD
+             *
+             * Contoh:
+             * 2026-10-05
+             *
+             * Diubah menjadi:
+             * 05/10/2026
+             */
+
+            if (
+                /^\d{4}-\d{2}-\d{2}$/.test(due)
+            ) {
+
+                const parts =
+                    due.split("-");
+
+                tanggalText.value =
+                    parts[2] +
+                    "/" +
+                    parts[1] +
+                    "/" +
+                    parts[0];
+
+                return;
+
+            }
+
+        }
+
+    }
+
+				// =====================================================
+				// CARI DHCP
+				// =====================================================
+
+				btnDHCP.addEventListener(
+					"click",
+					async function () {
+
+						const ip =
+							ipAddress.value.trim();
+
+						const router =
+							routerId.value;
+
+
+						// ==========================
+						// VALIDASI ROUTER
+						// ==========================
+
+						if (!router) {
+
+							hasil.innerHTML =
+								'<div class="alert alert-warning">' +
+								'Pilih Router MikroTik terlebih dahulu.' +
+								'</div>';
+
+							return;
+						}
+
+
+						// ==========================
+						// VALIDASI IP
+						// ==========================
+
+						if (!ip) {
+
+							hasil.innerHTML =
+								'<div class="alert alert-warning">' +
+								'Masukkan IP Address DHCP terlebih dahulu.' +
+								'</div>';
+
+							ipAddress.focus();
+
+							return;
+						}
+
+
+						// ==========================
+						// PROSES PENCARIAN
+						// ==========================
+
+						btnDHCP.disabled =
+							true;
+
+						btnDHCP.innerHTML =
+							"Mencari DHCP...";
+
+
+						hasil.innerHTML =
+							'<div class="alert alert-info">' +
+							'Mencari IP <b>' +
+							ip +
+							'</b> di MikroTik...' +
+							'</div>';
+
+
+						try {
+
+							const url =
+								"{{ url_for('pelanggan.cari_mikrotik') }}" +
+								"?router_id=" +
+								encodeURIComponent(router) +
+								"&tipe=DHCP" +
+								"&ip=" +
+								encodeURIComponent(ip);
+
+
+							const response =
+								await fetch(url);
+
+
+							const data =
+								await response.json();
+
+
+							// ==========================
+							// CEK HASIL
+							// ==========================
+
+							if (
+								!response.ok ||
+								!data.success
+							) {
+
+								hasil.innerHTML =
+									'<div class="alert alert-danger">' +
+									(
+										data.message ||
+										"DHCP tidak ditemukan."
+									) +
+									'</div>';
+
+								return;
+							}
+
+
+							// ==========================
+							// ISI DATA DHCP
+							// ==========================
+
+							ipAddress.value =
+								data.ip_address || ip;
+
+							macAddress.value =
+								data.mac_address || "";
+
+							host.value =
+								data.host || "";
+
+
+							// ==========================
+							// ISI DATA DARI COMMENT
+							// ==========================
+
+							isiDariComment(
+								data.comment || ""
+							);
+
+
+							// ==========================
+							// HASIL BERHASIL
+							// ==========================
+
+							hasil.innerHTML =
+								'<div class="alert alert-success">' +
+								'DHCP ditemukan di MikroTik.' +
+								'<br><b>IP:</b> ' +
+								(data.ip_address || "-") +
+								'<br><b>MAC:</b> ' +
+								(data.mac_address || "-") +
+								'<br><b>Host:</b> ' +
+								(data.host || "-") +
+								'<br><b>Status:</b> ' +
+								(data.status || "-") +
+								'</div>';
+
+
+						} catch (error) {
+
+							console.error(error);
+
+							hasil.innerHTML =
+								'<div class="alert alert-danger">' +
+								'Gagal menghubungi server.' +
+								'</div>';
+
+						} finally {
+
+							btnDHCP.disabled =
+								false;
+
+							btnDHCP.innerHTML =
+								"Cari DHCP";
+
+						}
+
+					}
+				);
+
+
+    // =====================================================
+    // CARI PPPOE
+    // =====================================================
+
+    btnPPPoE.addEventListener(
+        "click",
+        async function () {
+
+            const username =
+                pppoeUsername.value.trim();
+
+            const router =
+                routerId.value;
+
+
+            if (!router) {
+
+                hasil.innerHTML =
+                    '<div class="alert alert-warning">' +
+                    'Pilih Router MikroTik terlebih dahulu.' +
+                    '</div>';
+
+                return;
+            }
+
+
+            if (!username) {
+
+                hasil.innerHTML =
+                    '<div class="alert alert-warning">' +
+                    'Masukkan PPPoE User terlebih dahulu.' +
+                    '</div>';
+
+                pppoeUsername.focus();
+
+                return;
+            }
+
+
+            btnPPPoE.disabled =
+                true;
+
+            btnPPPoE.innerHTML =
+                "Mencari PPPoE...";
+
+
+            hasil.innerHTML =
+                '<div class="alert alert-info">' +
+                'Mencari user <b>' +
+                username +
+                '</b> di MikroTik...' +
+                '</div>';
+
+
+            try {
+
+                const url =
+                    "{{ url_for('pelanggan.cari_mikrotik') }}" +
+                    "?router_id=" +
+                    encodeURIComponent(router) +
+                    "&tipe=PPPoE" +
+                    "&username=" +
+                    encodeURIComponent(username);
+
+
+                const response =
+                    await fetch(url);
+
+
+                const data =
+                    await response.json();
+
+
+                if (
+                    !response.ok ||
+                    !data.success
+                ) {
+
+					hasil.innerHTML =
+						'<div class="alert alert-danger">' +
+						(
+							data.message ||
+							"PPPoE tidak ditemukan."
+						) +
+						'</div>';
+
+                    return;
+                }
+
+
+                // ==========================
+                // ISI PPPOE
+                // ==========================
+
+                pppoeUsername.value =
+                    data.username || username;
+
+                pppoePass.value =
+                    data.password || "";
+
+                pppoeProfile.value =
+                    data.profile || "";
+
+
+                // ==========================
+                // COMMENT
+                // ==========================
+
+                isiDariComment(
+                    data.comment || ""
+                );
+
+
+                hasil.innerHTML =
+                    '<div class="alert alert-success">' +
+                    'PPPoE ditemukan di MikroTik.' +
+                    '<br><b>User:</b> ' +
+                    (data.username || "-") +
+                    '<br><b>Profile:</b> ' +
+                    (data.profile || "-") +
+                    '<br><b>Status:</b> ' +
+                    (
+                        data.disabled
+                        ? "NONAKTIF"
+                        : "AKTIF"
+                    ) +
+                    '</div>';
+
+
+            } catch (error) {
+
+                console.error(error);
+
+                hasil.innerHTML =
+                    '<div class="alert alert-danger">' +
+                    'Gagal menghubungi server.' +
+                    '</div>';
+
+            } finally {
+
+                btnPPPoE.disabled =
+                    false;
+
+                btnPPPoE.innerHTML =
+                    "Cari PPPoE";
+
+            }
+
+        }
+    );
+
+});
+
+</script>
+
+{% endblock %}
+
+
+
+

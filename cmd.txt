@@ -1,0 +1,258 @@
+cd /d D:\mikrotik_invoice
+python -m venv venv_win10
+venv_win10\Scripts\activate
+python -m py_compile main_app.py
+python main_app.py
+
+python -c "import main_app; print('MAIN APP OK')"
+python generate_license_for_customer.py
+
+cd /d D:\mikrotik_invoice
+python main_app.py
+
+cd /d D:\mikrotik_invoice
+python web.py
+
+cd /d D:\mikrotik_invoice
+python test_mikrotik.py
+
+cd /d D:\mikrotik_invoice\tools
+python verify_project.py
+
+
+Buka http://127.0.0.1:5000
+Login:
+
+user: admin
+pass: admin123
+
+
+from core.transaksi_core import (
+    simpan_transaksi,
+    get_transaksi_list
+    pembayaran_selesai
+)
+
+Kalau ingin mencari definisi fungsi:
+
+cd /d D:\mikrotik_invoice
+findstr /S /N /C:"def get_pelanggan_list(" *.py 
+
+Atau lebih sederhana:
+
+cd /d D:\mikrotik_invoice
+findstr /S /N "INSERT INTO tagihan" *.py
+
+
+
+
+
+
+nama:Juju;paket:Unlimited;harga:100000;due:17/09/2026;no_hp:083824413532;iface:;usage:2.35 GB
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+)
+3️⃣ Mode web + desktop sinkron
+4️⃣ Auto switch Mikrotik ON/OFF
+
+1️⃣ PASTIKAN MIKROTIK SIAP (WAJIB)
+
+Di Mikrotik Router, pastikan:
+
+🔹 Service API aktif
+/ip service enable api
+/ip service set api port=8728
+
+
+Cek:
+
+/ip service print
+
+🔹 User punya izin penuh
+
+Minimal:
+
+/user print
+
+
+User yang kamu pakai harus punya policy:
+
+read, write, api
+
+
+Diagram Alur Data Pelanggan
+           +-----------------+
+           |   Router Mikrotik|
+           | (DHCP Leases /  |
+           | PPPoE Users)    |
+           +--------+--------+
+                    |
+                    | get_leases_with_comment()
+                    | (parse comment → id, nama, paket)
+                    v
+           +-----------------+
+           |  core.py        |
+           | get_pelanggan() |
+           | fresh_from_mikrotik=True
+           +--------+--------+
+                    |
+        +-----------+-----------+
+        |                       |
+        v                       v
++---------------+       +-----------------+
+| Manual JSON   |       | Gabungan List   |
+| customers.json|       | Mikrotik +      |
+|               |       | Manual          |
++-------+-------+       +--------+--------+
+        |                        |
+        | load_manual_customers()|
+        |                        |
+        +------------------------+
+                    |
+                    v
+           +-----------------+
+           | DATA_FILE       |
+           | data_pelanggan.json |
+           | (sinkronisasi)  |
+           +--------+--------+
+                    |
+                    v
+           +-----------------+
+           |  Web Interface  |
+           | /admin, /lunas,|
+           | /cetak, /edit  |
+           +--------+--------+
+                    |
+      +-------------+-------------+
+      |                           |
+      v                           v
+  Blokir pelanggan           Tandai LUNAS
+  belum bayar                → update status
+  → set_pppoe_status()       → cetak_struk_80mm()
+
+Berikut struktur final paket:
+
+mikrotik_invoice_final/
+│
+├─ app.py                # Flask app (versi final)
+├─ database.db           # Dibuat otomatis jika belum ada
+├─ static/
+│   ├─ logo.png          # Bisa ganti logo toko
+│   └─ qris.png          # QRIS pembayaran
+└─ templates/
+    ├─ base.html
+    ├─ login.html
+    ├─ dashboard.html
+    ├─ admin.html
+    ├─ pelanggan_tambah.html
+    ├─ pelanggan_edit.html
+    ├─ mikrotik_list.html
+    ├─ mikrotik_tambah.html
+    ├─ mikrotik_edit.html
+    ├─ invoice.html
+    └─ setting.html
+
+🌐 CARA AKSES (WAJIB)
+
+Buka browser (Chrome / Edge):
+
+http://127.0.0.1:5000
+
+
+atau
+
+http://localhost:5000
+
+
+Kalau masih ERR_CONNECTION_REFUSED, coba:
+
+http://192.168.2.2:5000
+
+
+(sesuai IP PC kamu sebelumnya)

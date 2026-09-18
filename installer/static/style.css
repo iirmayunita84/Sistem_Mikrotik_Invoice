@@ -1,0 +1,7 @@
+body { font-family: Segoe UI; background:#f4f6f8 }
+table { border-collapse: collapse; width:100%; background:white }
+th { background:#2c3e50; color:white; padding:8px }
+td { padding:8px; border-bottom:1px solid #ddd }
+
+tr.Lunas { background:#d4edda }
+tr.Belum\ Bayar { background:#f8d7da }

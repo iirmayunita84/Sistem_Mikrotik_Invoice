@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="card card-primary">
+  <div class="card-header">
+    <h3 class="card-title">Daftar Router MikroTik</h3>
+    <div class="card-tools">
+      <a href="/mikrotik/tambah" class="btn btn-success btn-sm">➕ Tambah Router</a>
+    </div>
+  </div>
+  <div class="card-body">
+    <table class="table table-bordered">
+      <tr>
+        <th>ID</th>
+        <th>Nama</th>
+        <th>Host</th>
+        <th>Aksi</th>
+      </tr>
+      {% for r in routers %}
+      <tr>
+        <td>{{ r.id }}</td>
+        <td>{{ r.label }}</td>
+        <td>{{ r.host }}</td>
+        <td>
+          <a href="/mikrotik/edit/{{ r.id }}" class="btn btn-warning btn-sm">✏️ Edit</a>
+          <a href="/mikrotik/hapus/{{ r.id }}" class="btn btn-danger btn-sm" onclick="return confirm('Hapus router ini?')">🗑 Hapus</a>
+        </td>
+      </tr>
+      {% endfor %}
+    </table>
+  </div>
+</div>
+
+{% endblock %}

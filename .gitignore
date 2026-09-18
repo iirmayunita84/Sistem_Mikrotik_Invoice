@@ -1,0 +1,108 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+
+# Virtual Environment
+venv/
+.venv/
+env/
+
+# Database
+*.db
+*.sqlite
+*.sqlite3
+
+# Environment / Secret
+.env
+.env.*
+!.env.example
+
+# Flask
+instance/
+
+# Logs
+*.log
+logs/
+
+# Temporary files
+*.tmp
+*.temp
+*.bak
+
+# Windows
+Thumbs.db
+desktop.ini
+
+# IDE
+.vscode/
+.idea/
+
+# Build
+build/
+dist/
+*.spec
+
+# User data
+uploads/
+Struk/
+backup/
+backups/
+
+# Local configuration
+config_local.py
+secrets.py
+
+# Sensitive application data
+admin.json
+users.json
+secret_parts.py
+
+# Local Python environment
+venv_win10/
+
+# Build / installer output
+build_win10/
+dist_win10/
+installer_win10/
+*.zip
+
+# Backup source files
+*.backup*
+*.bak
+
+# Local generated/test files
+AUDIT_HASIL_LENGKAP.txt
+security_config.py
+
+# Unused empty files
+31
+cd
+findstr
+python
+cmd
+
+# Poppler binary/library
+poppler/
+
+# License generator - private
+admin/license_generator_gui.py
+
+# License generator - PRIVATE
+admin/license_generator_gui.py
+generate_license.py
+generate_license_for_customer.py
+license_generator_gui.py
+license_gui.py
+license_gui_device.py
+license_manager.py
+admin/license_generator_gui.py
+
+# Backup source files
+*.bak
+*.bak_*
+*.before_*
+*.sebelum_*
+# Local customer data
+shared/

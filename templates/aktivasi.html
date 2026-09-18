@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <title>Aktivasi License - Mikrotik Invoice</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- AdminLTE CSS -->
+    <link rel="stylesheet"
+          href="https://cdn.jsdelivr.net/npm/admin-lte@3.2/dist/css/adminlte.min.css">
+</head>
+<body class="hold-transition login-page">
+
+<div class="login-box" style="width:480px">
+    <div class="card card-outline card-primary">
+
+        <div class="card-header text-center">
+            <h3 class="mb-0">🔐 Aktivasi License</h3>
+            <small class="text-muted">Mikrotik Invoice System</small>
+        </div>
+
+        <div class="card-body">
+
+            {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                {% for msg in messages %}
+                <div class="alert alert-danger text-center">
+                    {{ msg }}
+                </div>
+                {% endfor %}
+            {% endif %}
+            {% endwith %}
+
+            <!-- INFO TRIAL -->
+            {% if not license_ok %}
+            <div class="alert alert-warning text-center">
+                ⏳ Trial aktif atau belum aktivasi
+            </div>
+            {% endif %}
+
+            <!-- DEVICE ID -->
+            <div class="form-group">
+                <label>Device ID</label>
+                <input type="text" class="form-control text-center" value="{{ device_id }}" readonly onclick="this.select()">
+                <small class="text-muted">
+                    Salin Device ID ini dan kirim ke admin untuk mendapatkan License Key
+                </small>
+            </div>
+
+            <!-- FORM AKTIVASI -->
+            <form method="post">
+                <div class="form-group">
+                    <label>License Key</label>
+                    <input type="text" name="license_key" class="form-control" placeholder="Masukkan license key" required>
+                </div>
+
+                <button class="btn btn-primary btn-block">
+                    🔓 Aktivasi License
+                </button>
+            </form>
+
+            <!-- BUTTON BELI LICENSE -->
+			<a href="https://winme.id/uniteshop1"
+			   target="_blank"
+			   rel="noopener noreferrer"
+			   class="btn btn-success btn-block mt-2">
+			   🛒 Beli License
+			</a>
+            <!-- BUTTON WA ADMIN -->
+            <a href="https://wa.me/628569021868?text=Halo%20Admin%20👋%20Saya%20mau%20aktivasi%20aplikasi.%20Device%20ID:%20{{ device_id_encoded }}"
+               target="_blank" class="btn btn-info btn-block mt-2">
+               💬 Hubungi Admin via WhatsApp
+            </a>
+
+            <!-- BUTTON KELUAR -->
+            <a href="/logout" class="btn btn-danger btn-block mt-2">
+                🚪 Keluar
+            </a>
+
+        </div>
+
+        <div class="card-footer text-center text-muted">
+            © 2026 Mikrotik Invoice
+
+        </div>
+
+    </div>
+</div>
+
+<!-- JS -->
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/admin-lte@3.2/dist/js/adminlte.min.js"></script>
+
+</body>
+</html>

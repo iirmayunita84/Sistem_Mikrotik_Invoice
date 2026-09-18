@@ -1,0 +1,85 @@
+{% extends "base.html" %}
+{% block content %}
+
+ <div class="mb-3 d-flex justify-content-between align-items-center">
+  <h4>Daftar Pelanggan</h4>
+  <a href="/pelanggan_tambah" class="btn btn-success">➕ Tambah Pelanggan</a>
+</div>
+
+<div class="card">
+  <div class="card-body">
+
+	<!-- Kontrol Mikrotik -->
+	<div class="mb-3">
+	  
+	<select class="form-control" onchange="if(this.value) location.href=this.value;">
+	  <option value="">-- Sinkron Semua Router --</option>
+
+	  <!-- sinkron semua -->
+	  <option value="/sinkron-semua-router">🔄 Sinkron SEMUA Router</option>
+
+	  <!-- sinkron per router -->
+	  {% for r in mikrotik_list %}
+		<option value="/sinkron">
+		  {{ r.label }} ({{ r.host }})
+		</option>
+	  {% endfor %}
+	</select>
+
+    <!-- WA Reminder -->
+    <div class="mb-3">
+      <a href="/wa-reminder/-3" class="btn btn-info">⏰ WA H-3</a>
+      <a href="/wa-reminder/-1" class="btn btn-warning ml-2">⚠️ WA H-1</a>
+      <a href="/wa-reminder/0" class="btn btn-danger ml-2">📌 WA Hari Ini</a>
+    </div>
+
+    <!-- Aksi Massal -->
+    <div class="mb-3">
+      <a href="/auto-blokir" class="btn btn-danger">⛔ Auto Blokir</a>
+      <a href="/reset-bulanan" class="btn btn-warning ml-2">🔄 Reset Bulanan</a>
+    </div>
+
+    <!-- Tabel Pelanggan -->
+    <table class="table table-hover">
+      <thead>
+        <tr>
+          <th>Nama</th>
+          <th>Paket</th>
+          <th>Tagihan</th>
+          <th>Status</th>
+          <th>Aksi</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for p in data %}
+        <tr>
+          <td>{{ p.nama }}</td>
+          <td>{{ p.paket }}</td>
+          <td>Rp {{ "{:,}".format(p.harga|default(0)) }}</td>
+          <td>
+            {% if p.status in ["Lunas", "Aktif"] %}
+              <span class="badge badge-success">Aktif / Lunas</span>
+            {% else %}
+              <span class="badge badge-danger">Belum Bayar</span>
+            {% endif %}
+          </td>
+			<td>
+			  {% if p.source|default('manual') == "manual" %}
+				<a href="/pelanggan/edit/{{ p.id }}">✏️</a>
+			  {% endif %}
+			  <a href="/invoice/{{ p.id }}" class="btn btn-info btn-sm">🧾</a>
+			  <a href="/cetak-pdf/{{ p.id }}" class="btn btn-secondary btn-sm">📄 PDF</a>
+			  {% if p.status not in ["Lunas", "Aktif"] %}
+				<a href="/lunas/{{ p.id }}" class="btn btn-success btn-sm"
+				   onclick="return confirm('Tandai LUNAS?')">✅</a>
+			  {% endif %}
+			</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+
+  </div>
+</div>
+
+{% endblock %}

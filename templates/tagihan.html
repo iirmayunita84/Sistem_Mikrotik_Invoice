@@ -1,0 +1,542 @@
+﻿
+<!DOCTYPE html>
+<html lang="id">
+<head>
+
+<meta charset="UTF-8">
+
+<title>
+    {{ app.store_name }} - Tagihan Internet
+</title>
+
+
+<style>
+
+body{
+    margin:0;
+    background:#f5f6fa;
+    font-family:Arial,Helvetica,sans-serif;
+}
+
+.box{
+    max-width:460px;
+    margin:40px auto;
+    background:#fff;
+    border-radius:12px;
+    box-shadow:0 5px 15px rgba(0,0,0,.15);
+    overflow:hidden;
+}
+
+.header{
+    background:#0d6efd;
+    color:#fff;
+    text-align:center;
+    padding:25px;
+}
+
+.header img{
+    max-width:140px;
+    max-height:80px;
+    margin-bottom:10px;
+}
+
+.header h2{
+    margin:5px 0;
+}
+
+.header small{
+    opacity:.9;
+}
+
+.content{
+    padding:20px;
+}
+
+table{
+    width:100%;
+    border-collapse:collapse;
+}
+
+table td{
+    padding:7px 0;
+}
+
+.total{
+    text-align:center;
+    margin:20px 0;
+    font-size:30px;
+    color:#d32f2f;
+    font-weight:bold;
+}
+
+.status{
+    padding:12px;
+    border-radius:8px;
+    text-align:center;
+    font-weight:bold;
+    margin:20px 0;
+}
+
+.status.red{
+    background:#ffebee;
+    color:#c62828;
+}
+
+.status.green{
+    background:#e8f5e9;
+    color:#2e7d32;
+}
+
+.qris{
+    text-align:center;
+    margin-top:25px;
+}
+
+.qris img{
+    width:220px;
+    border:1px solid #ddd;
+    border-radius:8px;
+}
+
+.btn{
+    display:block;
+    width:100%;
+    padding:14px;
+    text-decoration:none;
+    background:#25D366;
+    color:#fff;
+    border-radius:8px;
+    text-align:center;
+    margin-top:20px;
+    font-weight:bold;
+    box-sizing:border-box;
+}
+
+.footer{
+    text-align:center;
+    font-size:13px;
+    color:#666;
+    padding:20px;
+    border-top:1px solid #eee;
+}
+
+.info{
+    background:#f8f9fa;
+    border-radius:8px;
+    padding:15px;
+}
+
+.countdown{
+    text-align:center;
+    margin-top:15px;
+    color:#666;
+    font-weight:bold;
+}
+
+</style>
+
+</head>
+
+
+<body>
+
+<div class="box">
+
+
+{% if tidak_dikenal %}
+
+    <div class="content">
+
+        <h2 align="center">
+            [PERINGATAN] Data Tidak Ditemukan
+        </h2>
+
+        <p align="center">
+            Silakan hubungi admin.
+        </p>
+
+    </div>
+
+
+{% else %}
+
+
+    <!-- ================================= -->
+    <!-- HEADER -->
+    <!-- ================================= -->
+
+    <div class="header">
+
+        {% if app.logo_file %}
+
+        <img
+            src="/uploads/{{ app.logo_file }}"
+            alt="Logo">
+
+        {% endif %}
+
+
+        <h2>
+            {{ app.store_name }}
+        </h2>
+
+
+        <small>
+            {{ app.store_address }}
+        </small>
+
+    </div>
+
+
+    <!-- ================================= -->
+    <!-- CONTENT -->
+    <!-- ================================= -->
+
+    <div class="content">
+
+
+        <div class="info">
+
+            <table>
+
+                <tr>
+
+                    <td>
+                        Nama
+                    </td>
+
+                    <td align="right">
+                        <b>{{ nama }}</b>
+                    </td>
+
+                </tr>
+
+
+                <tr>
+
+                    <td>
+                        Paket
+                    </td>
+
+                    <td align="right">
+                        {{ paket }}
+                    </td>
+
+                </tr>
+
+
+                <tr>
+
+                    <td>
+                        Jatuh Tempo
+                    </td>
+
+                    <td align="right">
+                        <b>{{ due }}</b>
+                    </td>
+
+                </tr>
+
+            </table>
+
+        </div>
+
+
+        <!-- ================================= -->
+        <!-- TOTAL -->
+        <!-- ================================= -->
+
+        <div class="total">
+
+            Rp {{ "{:,.0f}".format(harga).replace(",",".") }}
+
+        </div>
+
+
+        <!-- ================================= -->
+        <!-- STATUS -->
+        <!-- ================================= -->
+
+        {% if telat %}
+
+            <div class="status red">
+
+                [BLOKIR] INTERNET SEMENTARA DIBLOKIR
+
+            </div>
+
+        {% else %}
+
+            <div class="status green">
+
+                [OK] TAGIHAN BELUM JATUH TEMPO
+
+            </div>
+
+        {% endif %}
+
+
+        <!-- ================================= -->
+        <!-- QRIS -->
+        <!-- ================================= -->
+
+        {% if app.qris_file %}
+
+            <div class="qris">
+
+                <b>
+                    Scan QRIS
+                </b>
+
+                <br>
+                <br>
+
+                <img
+                    src="/uploads/{{ app.qris_file }}"
+                    alt="QRIS">
+
+                <p>
+                    Setelah transfer silakan
+                    konfirmasi ke Admin.
+                </p>
+
+            </div>
+
+        {% endif %}
+
+
+        <!-- ================================= -->
+        <!-- WHATSAPP -->
+        <!-- ================================= -->
+
+        {% set nomor = no_hp.replace('+','') %}
+
+
+        {% if nomor.startswith('0') %}
+
+            {% set nomor = '62' + nomor[1:] %}
+
+        {% endif %}
+
+
+        <a
+            class="btn"
+            href="https://wa.me/{{ nomor }}?text=Halo%20Admin,%20saya%20sudah%20melakukan%20pembayaran%20atas%20nama%20{{ nama|urlencode }}"
+        >
+
+            [KONFIRMASI] Konfirmasi Pembayaran
+
+        </a>
+
+
+        <!-- ================================= -->
+        <!-- COUNTDOWN -->
+        <!-- ================================= -->
+
+        <div
+            id="countdown"
+            class="countdown">
+        </div>
+
+
+    </div>
+
+
+    <!-- ================================= -->
+    <!-- FOOTER -->
+    <!-- ================================= -->
+
+    <div class="footer">
+
+        {{ app.footer_message|replace('\n','<br>')|safe }}
+
+    </div>
+
+
+{% endif %}
+
+
+</div>
+
+
+<script>
+
+{% if not tidak_dikenal %}
+
+
+/*
+====================================================
+JATUH TEMPO
+FORMAT UTAMA:
+MM/DD/YYYY
+
+Contoh:
+10/05/2026
+=
+5 Oktober 2026
+====================================================
+*/
+
+const due =
+    "{{ due|e }}";
+
+
+function parseTanggalMMDDYYYY(value){
+
+    if(
+        !value ||
+        !/^\d{2}\/\d{2}\/\d{4}$/.test(value)
+    ){
+        return null;
+    }
+
+
+    const parts =
+        value.split("/");
+
+
+    const month =
+        parseInt(parts[0],10);
+
+    const day =
+        parseInt(parts[1],10);
+
+    const year =
+        parseInt(parts[2],10);
+
+
+    if(
+        month < 1 ||
+        month > 12 ||
+        day < 1 ||
+        day > 31
+    ){
+        return null;
+    }
+
+
+    const tanggal =
+        new Date(
+            year,
+            month - 1,
+            day
+        );
+
+
+    /*
+     * Pastikan tanggal benar-benar valid.
+     *
+     * Contoh:
+     * 02/31/2026
+     * akan ditolak.
+     */
+
+    if(
+        tanggal.getFullYear() !== year ||
+        tanggal.getMonth() !== month - 1 ||
+        tanggal.getDate() !== day
+    ){
+        return null;
+    }
+
+
+    tanggal.setHours(
+        0,
+        0,
+        0,
+        0
+    );
+
+
+    return tanggal;
+
+}
+
+
+/*
+====================================================
+HITUNG COUNTDOWN
+====================================================
+*/
+
+try{
+
+    const tanggalJatuhTempo =
+        parseTanggalMMDDYYYY(due);
+
+
+    if(tanggalJatuhTempo){
+
+        const sekarang =
+            new Date();
+
+
+        sekarang.setHours(
+            0,
+            0,
+            0,
+            0
+        );
+
+
+        const selisih =
+            tanggalJatuhTempo.getTime() -
+            sekarang.getTime();
+
+
+        const sisa =
+            Math.ceil(
+                selisih /
+                (1000 * 60 * 60 * 24)
+            );
+
+
+        const countdown =
+            document.getElementById(
+                "countdown"
+            );
+
+
+        if(sisa > 0){
+
+            countdown.innerHTML =
+                " Sisa " +
+                sisa +
+                " hari menuju jatuh tempo";
+
+        }
+        else if(sisa === 0){
+
+            countdown.innerHTML =
+                "[PERINGATAN] Hari ini adalah batas pembayaran";
+
+        }
+        else{
+
+            countdown.innerHTML =
+                "[PERINGATAN] Tagihan telah melewati jatuh tempo";
+
+        }
+
+    }
+
+
+}
+catch(error){
+
+    console.error(
+        "Gagal menghitung jatuh tempo:",
+        error
+    );
+
+}
+
+
+{% endif %}
+
+</script>
+
+
+</body>
+</html>
+

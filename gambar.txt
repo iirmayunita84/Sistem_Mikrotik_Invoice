@@ -1,0 +1,41 @@
+ Volume in drive D is New Volume
+ Volume Serial Number is F26F-456A
+
+ Directory of D:\mikrotik_invoice
+
+02/02/2026  11.10         1.283.568 splash.png
+               1 File(s)      1.283.568 bytes
+
+ Directory of D:\mikrotik_invoice\assets
+
+10/08/2025  02.11            42.697 logo.png
+12/08/2025  07.22             5.023 qris.png
+               2 File(s)         47.720 bytes
+
+ Directory of D:\mikrotik_invoice\installer
+
+02/02/2026  11.10         1.283.568 splash.png
+               1 File(s)      1.283.568 bytes
+
+ Directory of D:\mikrotik_invoice\installer\static
+
+10/08/2025  02.11            42.697 logo.png
+12/08/2025  07.22             5.023 qris.png
+02/02/2026  11.10         1.283.568 splash.png
+               3 File(s)      1.331.288 bytes
+
+ Directory of D:\mikrotik_invoice\static
+
+10/08/2025  02.11            42.697 logo.png
+12/08/2025  07.22             5.023 qris.png
+02/02/2026  11.10         1.283.568 splash.png
+               3 File(s)      1.331.288 bytes
+
+ Directory of D:\mikrotik_invoice\uploads
+
+26/02/2026  19.56             5.023 qris_qris.png
+               1 File(s)          5.023 bytes
+
+     Total Files Listed:
+              11 File(s)      5.282.455 bytes
+               0 Dir(s)  389.453.156.352 bytes free

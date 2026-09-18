@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+
+<title>Invoice Pembayaran</title>
+
+<style>
+
+@page {
+    size: 80mm auto;
+    margin: 3mm;
+}
+
+html,
+body {
+    width: 74mm;
+    margin: 0 auto;
+    padding: 0;
+
+    font-family: Consolas, "Courier New", monospace;
+    font-size: 11px;
+    color: #000;
+}
+
+.center {
+    text-align: center;
+}
+
+.right {
+    text-align: right;
+}
+
+.bold {
+    font-weight: bold;
+}
+
+.small {
+    font-size: 9px;
+}
+
+.total {
+    font-size: 18px;
+    font-weight: bold;
+}
+
+.logo {
+    display: block;
+
+    max-width: 60mm;
+    max-height: 28mm;
+
+    margin: 0 auto 5px auto;
+}
+
+.qris {
+    display: block;
+
+    width: 45mm;
+    max-width: 45mm;
+
+    margin: 5px auto;
+}
+
+hr {
+    border: 0;
+    border-top: 1px dashed #000;
+
+    margin: 6px 0;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+td {
+    padding: 2px 0;
+    vertical-align: top;
+}
+
+.label {
+    width: 28mm;
+}
+
+.no-print {
+    text-align: center;
+    margin-top: 15px;
+}
+
+@media print {
+
+    .no-print {
+        display: none;
+    }
+
+}
+
+</style>
+
+<script>
+
+window.onload = function () {
+
+    setTimeout(function () {
+
+        window.print();
+
+    }, 500);
+
+};
+
+window.onafterprint = function () {
+
+    setTimeout(function () {
+
+        window.close();
+
+    }, 500);
+
+};
+
+</script>
+
+</head>
+
+<body>
+
+<!-- ================= HEADER ================= -->
+
+<div class="center">
+
+    {% if app.logo_file %}
+
+    <img
+        src="{{ url_for('uploaded_file', filename=app.logo_file) }}"
+        class="logo"
+        alt="Logo">
+
+    {% endif %}
+
+    <div class="bold">
+        {{ app.store_name or "ISP INTERNET" }}
+    </div>
+
+    <div class="small">
+        {{ app.store_address or "" }}
+    </div>
+
+</div>
+
+<hr>
+
+<!-- ================= PELANGGAN ================= -->
+
+<table>
+
+<tr>
+    <td class="label">Nama</td>
+    <td>: {{ pelanggan.nama or "-" }}</td>
+</tr>
+
+<tr>
+    <td class="label">Paket</td>
+    <td>: {{ pelanggan.paket or "-" }}</td>
+</tr>
+
+<tr>
+    <td class="label">Status</td>
+    <td>:
+        <b>{{ pelanggan.status or "LUNAS" }}</b>
+    </td>
+</tr>
+
+<tr>
+    <td class="label">Jatuh Tempo</td>
+    <td>: {{ pelanggan.jatuh_tempo or "-" }}</td>
+</tr>
+
+<tr>
+    <td class="label">Tanggal Bayar</td>
+    <td>: {{ moment or "-" }}</td>
+</tr>
+
+</table>
+
+<hr>
+
+<!-- ================= DETAIL ================= -->
+
+<table>
+
+<tr>
+    <td class="label">PPPoE</td>
+    <td>: {{ pelanggan.pppoe_username or "-" }}</td>
+</tr>
+
+<tr>
+    <td class="label">IP</td>
+    <td>: {{ pelanggan.ip_address or pelanggan.ip or "-" }}</td>
+</tr>
+
+<tr>
+    <td class="label">No HP</td>
+    <td>: {{ pelanggan.no_hp or "-" }}</td>
+</tr>
+
+<tr>
+    <td class="label">Pemakaian</td>
+    <td>: {{ pelanggan.usage_last or pelanggan.usage or "-" }}</td>
+</tr>
+
+</table>
+
+<hr>
+
+<!-- ================= TOTAL ================= -->
+
+<div class="center bold">
+    TOTAL PEMBAYARAN
+</div>
+
+<div class="right total">
+
+    Rp {{ "{:,.0f}".format(
+        pelanggan.harga|float
+    ).replace(",", ".") }}
+
+</div>
+
+<hr>
+
+<!-- ================= QRIS ================= -->
+
+{% if app.qris_file and pelanggan.status|string|upper != "LUNAS" %}
+
+<div class="center">
+
+
+    <img
+        src="{{ url_for('uploaded_file', filename=app.qris_file) }}"
+        class="qris"
+        alt="QRIS">
+
+    <br>
+
+    <span class="small">
+        Silakan scan QRIS untuk pembayaran
+    </span>
+
+</div>
+
+<hr>
+
+{% endif %}
+
+<!-- ================= FOOTER ================= -->
+
+<div class="center small">
+
+    {{ app.footer_message|replace('\n', '<br>')|safe }}
+
+</div>
+
+<!-- ================= BUTTON ================= -->
+
+<div class="no-print">
+
+    <button onclick="window.print()">
+        🖨️ Cetak Lagi
+    </button>
+
+    <br><br>
+
+    <button onclick="window.location.href='{{ url_for("pelanggan.pelanggan_page") }}'">
+        ← Kembali
+    </button>
+
+</div>
+
+</body>
+</html>

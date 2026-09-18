@@ -1,0 +1,247 @@
+﻿powershell -Command "@'
+<!DOCTYPE html>
+<html lang=""id"">
+<head>
+    <meta charset=""UTF-8"">
+    <meta name=""viewport"" content=""width=device-width, initial-scale=1.0"">
+    <title>Tagihan - {{ app.store_name if app else 'ISP Billing' }}</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f6f8;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: auto;
+        }
+
+        h1 {
+            margin-bottom: 20px;
+        }
+
+        .cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .card {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px rgba(0,0,0,.08);
+        }
+
+        .card-title {
+            color: #666;
+            font-size: 14px;
+            margin-bottom: 8px;
+        }
+
+        .card-value {
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .table-box {
+            background: white;
+            border-radius: 10px;
+            padding: 15px;
+            overflow-x: auto;
+            box-shadow: 0 2px 8px rgba(0,0,0,.08);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 12px 10px;
+            border-bottom: 1px solid #eee;
+            text-align: left;
+            white-space: nowrap;
+        }
+
+        th {
+            background: #f8f9fa;
+        }
+
+        .status {
+            font-weight: bold;
+        }
+
+        .lunas {
+            color: #198754;
+        }
+
+        .belum {
+            color: #dc3545;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 7px 12px;
+            background: #0d6efd;
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+            font-size: 13px;
+        }
+
+        .empty {
+            text-align: center;
+            padding: 40px;
+            color: #777;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class=""container"">
+
+    <h1>Daftar Tagihan</h1>
+
+    <div class=""cards"">
+
+        <div class=""card"">
+            <div class=""card-title"">Total Tagihan</div>
+            <div class=""card-value"">
+                {{ total_tagihan }}
+            </div>
+        </div>
+
+        <div class=""card"">
+            <div class=""card-title"">Total Nilai</div>
+            <div class=""card-value"">
+                Rp {{ "{:,.0f}".format(total_nilai or 0).replace(",", ".") }}
+            </div>
+        </div>
+
+        <div class=""card"">
+            <div class=""card-title"">Belum Dibayar</div>
+            <div class=""card-value"">
+                {{ belum_bayar|length }}
+            </div>
+        </div>
+
+        <div class=""card"">
+            <div class=""card-title"">Nilai Belum Dibayar</div>
+            <div class=""card-value"">
+                Rp {{ "{:,.0f}".format(total_belum_bayar or 0).replace(",", ".") }}
+            </div>
+        </div>
+
+    </div>
+
+
+    <div class=""table-box"">
+
+        {% if tagihan_list %}
+
+        <table>
+
+            <thead>
+                <tr>
+                    <th>No</th>
+                    <th>Nama</th>
+                    <th>Paket</th>
+                    <th>Periode</th>
+                    <th>Jatuh Tempo</th>
+                    <th>Jumlah</th>
+                    <th>Status</th>
+                    <th>Aksi</th>
+                </tr>
+            </thead>
+
+            <tbody>
+
+            {% for t in tagihan_list %}
+
+                <tr>
+
+                    <td>{{ loop.index }}</td>
+
+                    <td>
+                        {{ t.nama or '-' }}
+                    </td>
+
+                    <td>
+                        {{ t.paket or '-' }}
+                    </td>
+
+                    <td>
+                        {{ t.bulan }}/{{ t.tahun }}
+                    </td>
+
+                    <td>
+                        {{ t.jatuh_tempo or '-' }}
+                    </td>
+
+                    <td>
+                        Rp {{ "{:,.0f}".format(t.jumlah or 0).replace(",", ".") }}
+                    </td>
+
+                    <td>
+
+                        {% set status = (t.status or '')|upper %}
+
+                        {% if status in ['LUNAS', 'PAID', 'SUDAH BAYAR'] %}
+
+                            <span class=""status lunas"">
+                                LUNAS
+                            </span>
+
+                        {% else %}
+
+                            <span class=""status belum"">
+                                BELUM BAYAR
+                            </span>
+
+                        {% endif %}
+
+                    </td>
+
+                    <td>
+
+                        {% if t.pelanggan_id %}
+
+                            <a
+                                class="btn"
+                                href="{{ url_for('pelanggan.tagihan', pid=t.pelanggan_id) }}">
+                                Lihat
+                            </a>
+
+                        {% endif %}
+
+                    </td>
+
+                </tr>
+
+            {% endfor %}
+
+            </tbody>
+
+        </table>
+
+        {% else %}
+
+            <div class=""empty"">
+                Belum ada data tagihan.
+            </div>
+
+        {% endif %}
+
+    </div>
+
+</div>
+
+</body>
+</html>
+'@ | Set-Content D:\mikrotik_invoice\templates\tagihan_list.html -Encoding UTF8"

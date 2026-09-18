@@ -1,0 +1,381 @@
+{% extends "base.html" %}
+
+{% block head %}
+<style>
+    .page-title {
+        font-weight: 700;
+        color: #1f2937;
+        margin-bottom: 4px;
+    }
+
+    .page-subtitle {
+        color: #6b7280;
+        margin-bottom: 0;
+    }
+
+    .stat-card {
+        background: #ffffff;
+        border: 1px solid #e5e7eb;
+        border-radius: 12px;
+        padding: 18px;
+        height: 100%;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+    }
+
+    .stat-label {
+        color: #6b7280;
+        font-size: 13px;
+        margin-bottom: 5px;
+    }
+
+    .stat-value {
+        color: #111827;
+        font-size: 24px;
+        font-weight: 700;
+    }
+
+    .stat-value.success {
+        color: #15803d;
+    }
+
+    .stat-value.warning {
+        color: #b45309;
+    }
+
+    .content-card {
+        background: #ffffff;
+        border: 1px solid #e5e7eb;
+        border-radius: 12px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+        overflow: hidden;
+    }
+
+    .content-card-header {
+        padding: 18px 20px;
+        border-bottom: 1px solid #e5e7eb;
+        background: #ffffff;
+    }
+
+    .content-card-title {
+        margin: 0;
+        font-size: 17px;
+        font-weight: 700;
+        color: #1f2937;
+    }
+
+    .table {
+        margin-bottom: 0;
+    }
+
+    .table thead th {
+        background: #f8fafc;
+        color: #475569;
+        font-size: 12px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: .03em;
+        border-bottom: 1px solid #e5e7eb;
+        padding: 13px 15px;
+        white-space: nowrap;
+    }
+
+    .table tbody td {
+        padding: 14px 15px;
+        vertical-align: middle;
+        color: #374151;
+        border-color: #f1f5f9;
+    }
+
+    .table tbody tr:hover {
+        background: #f8fafc;
+    }
+
+    .customer-name {
+        font-weight: 600;
+        color: #111827;
+    }
+
+    .customer-phone {
+        font-size: 12px;
+        color: #6b7280;
+        margin-top: 2px;
+    }
+
+    .status-badge {
+        display: inline-block;
+        padding: 5px 10px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 600;
+        white-space: nowrap;
+    }
+
+    .status-lunas {
+        background: #dcfce7;
+        color: #166534;
+    }
+
+    .status-belum {
+        background: #fef3c7;
+        color: #92400e;
+    }
+
+    .status-lain {
+        background: #f1f5f9;
+        color: #475569;
+    }
+
+    .currency {
+        font-weight: 600;
+        color: #111827;
+        white-space: nowrap;
+    }
+
+    .empty-state {
+        padding: 55px 20px;
+        text-align: center;
+        color: #6b7280;
+    }
+
+    .empty-icon {
+        font-size: 42px;
+        margin-bottom: 12px;
+        opacity: .7;
+    }
+</style>
+{% endblock %}
+
+
+{% block content %}
+
+<div class="container-fluid">
+
+    <!-- HEADER -->
+    <div class="d-flex flex-wrap justify-content-between align-items-center mb-4">
+
+        <div>
+            <h3 class="page-title">
+                <i class="fas fa-money-check-alt me-2"></i>
+                Pembayaran
+            </h3>
+
+            <p class="page-subtitle">
+                Riwayat dan status pembayaran tagihan pelanggan.
+            </p>
+        </div>
+
+        <div class="mt-3 mt-md-0">
+
+            <a href="{{ url_for('misc.dashboard') }}"
+               class="btn btn-outline-secondary">
+                <i class="fas fa-arrow-left me-1"></i>
+                Dashboard
+            </a>
+
+        </div>
+
+    </div>
+
+
+    <!-- STATISTIK -->
+    <div class="row g-3 mb-4">
+
+        <div class="col-md-4">
+
+            <div class="stat-card">
+
+                <div class="stat-label">
+                    Total Pembayaran Lunas
+                </div>
+
+                <div class="stat-value success">
+                    Rp {{ "{:,.0f}".format(total_pembayaran or 0).replace(",", ".") }}
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="col-md-4">
+
+            <div class="stat-card">
+
+                <div class="stat-label">
+                    Jumlah Lunas
+                </div>
+
+                <div class="stat-value success">
+                    {{ jumlah_lunas }}
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="col-md-4">
+
+            <div class="stat-card">
+
+                <div class="stat-label">
+                    Belum Dibayar
+                </div>
+
+                <div class="stat-value warning">
+                    {{ jumlah_belum }}
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- TABEL PEMBAYARAN -->
+    <div class="content-card">
+
+        <div class="content-card-header">
+
+            <h5 class="content-card-title">
+                <i class="fas fa-receipt me-2"></i>
+                Daftar Pembayaran
+            </h5>
+
+        </div>
+
+
+        {% if pembayaran_list %}
+
+        <div class="table-responsive">
+
+            <table class="table table-hover align-middle">
+
+                <thead>
+
+                    <tr>
+                        <th style="width: 55px;">No</th>
+                        <th>Pelanggan</th>
+                        <th>Paket</th>
+                        <th>Periode</th>
+                        <th class="text-end">Jumlah</th>
+                        <th class="text-center">Status</th>
+                        <th>Tanggal Bayar</th>
+                    </tr>
+
+                </thead>
+
+
+                <tbody>
+
+                {% for item in pembayaran_list %}
+
+                    {% set status = (item.status or '')|upper %}
+
+                    <tr>
+
+                        <td class="text-muted">
+                            {{ loop.index }}
+                        </td>
+
+
+                        <td>
+
+                            <div class="customer-name">
+                                {{ item.nama or "Pelanggan" }}
+                            </div>
+
+                            {% if item.no_hp %}
+                            <div class="customer-phone">
+                                {{ item.no_hp }}
+                            </div>
+                            {% endif %}
+
+                        </td>
+
+
+                        <td>
+                            {{ item.paket or "-" }}
+                        </td>
+
+
+                        <td>
+                            {{ item.bulan or "-" }}
+                            {% if item.tahun %}
+                                {{ item.tahun }}
+                            {% endif %}
+                        </td>
+
+
+                        <td class="text-end currency">
+                            Rp {{ "{:,.0f}".format(item.jumlah or 0).replace(",", ".") }}
+                        </td>
+
+
+                        <td class="text-center">
+
+                            {% if status in ["LUNAS", "PAID", "SUDAH BAYAR"] %}
+
+                                <span class="status-badge status-lunas">
+                                    <i class="fas fa-check-circle me-1"></i>
+                                    Lunas
+                                </span>
+
+                            {% elif status in ["BELUM", "BELUM BAYAR", "UNPAID"] %}
+
+                                <span class="status-badge status-belum">
+                                    <i class="fas fa-clock me-1"></i>
+                                    Belum Bayar
+                                </span>
+
+                            {% else %}
+
+                                <span class="status-badge status-lain">
+                                    {{ item.status or "Belum Ada Status" }}
+                                </span>
+
+                            {% endif %}
+
+                        </td>
+
+
+                        <td>
+                            {{ item.tanggal_bayar or "-" }}
+                        </td>
+
+                    </tr>
+
+                {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+        {% else %}
+
+        <div class="empty-state">
+
+            <div class="empty-icon">
+                <i class="fas fa-receipt"></i>
+            </div>
+
+            <h5 class="mb-2">
+                Belum Ada Data Pembayaran
+            </h5>
+
+            <p class="mb-0">
+                Belum terdapat transaksi pembayaran yang tercatat.
+            </p>
+
+        </div>
+
+        {% endif %}
+
+    </div>
+
+</div>
+
+{% endblock %}

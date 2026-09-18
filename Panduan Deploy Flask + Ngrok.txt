@@ -1,0 +1,71 @@
+Panduan Deploy Flask + Ngrok
+1️⃣ Pastikan Web Flask Siap
+
+Pastikan web.py sudah pakai Waitress (versi publik-ready yang aku buat tadi).
+
+Jalankan di lokal dulu untuk tes:
+
+python web.py
+
+
+Buka browser di PC, cek:
+
+http://127.0.0.1:5000
+
+
+Pastikan halaman login muncul.
+
+2️⃣ Download dan Pasang Ngrok
+
+Buka https://ngrok.com/download
+
+Download versi Windows.
+
+Extract ke folder yang mudah diakses, misal C:\ngrok.
+
+Buka Command Prompt atau PowerShell di folder Ngrok.
+
+Login atau set authtoken Ngrok (supaya URL tetap):
+
+ngrok authtoken <TOKEN_KAMU>
+
+
+Token bisa didapatkan setelah daftar akun gratis Ngrok.
+
+3️⃣ Jalankan Ngrok
+
+Buka terminal baru, jalankan:
+
+ngrok http 5000
+
+
+Kamu akan melihat output seperti ini:
+
+Forwarding                    https://abcd1234.ngrok.io -> http://localhost:5000
+
+
+Nah, URL publik kamu adalah:
+
+https://abcd1234.ngrok.io
+
+
+Sekarang siapa pun bisa akses aplikasi kamu via internet tanpa konfigurasi router.
+
+4️⃣ Tes Akses Publik
+
+Buka HP atau perangkat lain, akses URL Ngrok:
+
+https://abcd1234.ngrok.io
+
+
+Login dengan username admin → harus bisa masuk dashboard.
+
+Semua fitur (tambah pelanggan, cetak struk, sinkron Mikrotik) tetap jalan.
+
+5️⃣ Tips Aman
+
+Gunakan password admin kuat atau buat sistem login lebih aman jika mau banyak user.
+
+Ngrok gratis punya URL acak, jadi kalau PC restart URL berubah → bisa pakai Ngrok Pro untuk custom domain.
+
+Jangan beri akses publik ke PC tanpa proteksi → siapapun bisa lihat Excel data_pelanggan.xlsx kalau ada bug.

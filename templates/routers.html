@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block content %}
+<h3>Daftar Router</h3>
+
+<table border="1" cellpadding="5" cellspacing="0">
+  <thead>
+    <tr>
+      <th>Label</th>
+      <th>IP / Host</th>
+      <th>Status</th>
+      <th>Pelanggan</th>
+      <th>Aksi</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for router in routers %}
+    <tr>
+      <td>{{ router.label }}</td>
+      <td>{{ router.ip }}</td>
+      <td>
+        {% if router.status == "online" %}
+          <span style="color:green;">● Online</span>
+        {% elif router.status == "offline" %}
+          <span style="color:red;">● Offline</span>
+        {% else %}
+          <span style="color:gray;">● Unknown</span>
+        {% endif %}
+      </td>
+      <td>{{ router.pelanggan | length }}</td>
+      <td>
+        <a href="{{ url_for('router.router_detail', rid=router.id) }}">Detail</a> |
+        <a href="{{ url_for('router.delete_router', rid=router.id) }}" onclick="return confirm('Hapus router?')">Hapus</a>
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+<a href="{{ url_for('misc.dashboard') }}">⬅ Kembali ke Dashboard</a>
+{% endblock %}

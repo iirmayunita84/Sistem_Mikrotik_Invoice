@@ -1,0 +1,40 @@
+<h2>🔥 DHCP Live Monitor</h2>
+
+<table border="1" width="100%">
+    <thead>
+        <tr>
+            <th>IP</th>
+            <th>MAC</th>
+            <th>HOST</th>
+            <th>NAMA</th>
+            <th>STATUS</th>
+            <th>LAST SEEN</th>
+        </tr>
+    </thead>
+    <tbody id="dhcpTable"></tbody>
+</table>
+
+<script>
+async function loadDHCP() {
+    let res = await fetch("/api/dhcp/live");
+    let data = await res.json();
+
+    let html = "";
+    data.forEach(d => {
+        html += `
+        <tr>
+            <td>${d.ip_address}</td>
+            <td>${d.mac_address}</td>
+            <td>${d.host_name || "-"}</td>
+            <td>${d.nama || "-"}</td>
+            <td>${d.status}</td>
+            <td>${d.last_seen}</td>
+        </tr>`;
+    });
+
+    document.getElementById("dhcpTable").innerHTML = html;
+}
+
+setInterval(loadDHCP, 3000); // 🔥 live tiap 3 detik
+loadDHCP();
+</script>

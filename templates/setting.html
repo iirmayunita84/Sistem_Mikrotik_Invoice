@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="card card-primary">
+  <div class="card-header"><h3 class="card-title">Pengaturan Toko</h3></div>
+  <form method="post" enctype="multipart/form-data">
+    <div class="card-body">
+      <div class="form-group">
+        <label>Nama Toko</label>
+        <input name="store_name" class="form-control" value="{{ app.store_name }}">
+      </div>
+      <div class="form-group">
+        <label>Alamat Toko</label>
+        <textarea name="store_address" class="form-control">{{ app.store_address }}</textarea>
+      </div>
+      <div class="form-group">
+        <label>Pesan Footer Invoice</label>
+        <textarea name="footer_message" class="form-control">{{ app.footer_message }}</textarea>
+      </div>
+      <div class="form-group">
+        <label>Default Mikrotik</label>
+        <select name="default_account" class="form-control">
+          {% for r in routers %}
+            <option value="{{ r.id }}" {% if r.id == app.default_account %}selected{% endif %}>
+              {{ r.label }} ({{ r.host }})
+            </option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Logo (BMP / PNG)</label>
+        <input type="file" name="logo" class="form-control">
+      </div>
+      <div class="form-group">
+        <label>QRIS</label>
+        <input type="file" name="qris" class="form-control">
+      </div>
+    </div>
+    <div class="card-footer">
+      <button class="btn btn-primary">💾 Simpan</button>
+      <a href="/admin" class="btn btn-secondary">Kembali</a>
+    </div>
+  </form>
+</div>
+
+{% endblock %}

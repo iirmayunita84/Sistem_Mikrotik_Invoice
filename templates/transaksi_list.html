@@ -1,0 +1,123 @@
+{% extends "base.html" %}
+{% block content %}
+
+<h4 class="mb-3">🧾 Riwayat Transaksi</h4>
+
+<div class="row mb-3">
+
+  <div class="col-md-6">
+    <div class="alert alert-info mb-2">
+      Total Transaksi:
+      <b>{{ total_transaksi }}</b>
+    </div>
+  </div>
+
+  <div class="col-md-6">
+    <div class="alert alert-success mb-2">
+      Total Pemasukan:
+      <b>Rp {{ "{:,}".format(total_pemasukan or 0) }}</b>
+    </div>
+  </div>
+
+</div>
+
+<div class="card shadow-sm">
+  <div class="card-body table-responsive p-0">
+
+<table class="table table-bordered table-hover table-sm mb-0">
+
+  <thead class="thead-light">
+    <tr class="text-center">
+
+      <th width="50">No</th>
+      <th width="160">Tanggal Bayar</th>
+      <th>Nama</th>
+      <th>Paket</th>
+      <th width="140">Harga</th>
+      <th width="90">Status</th>
+
+    </tr>
+  </thead>
+
+  <tbody>
+
+    {% if transaksi %}
+
+      {% for t in transaksi %}
+
+      <tr>
+
+        <td class="text-center">
+          {{ loop.index }}
+        </td>
+
+        <td>
+          {% if t.tanggal_bayar %}
+            {{ t.tanggal_bayar[:16]
+               .replace('-', '/')
+               .replace(':', '.', 1) }}
+          {% else %}
+            -
+          {% endif %}
+        </td>
+
+        <td>
+
+          <a
+            href="/invoice/{{ t.id }}"
+            class="font-weight-bold text-primary"
+          >
+            📄 {{ t.nama or "-" }}
+          </a>
+
+        </td>
+
+        <td>
+          {{ t.paket or "-" }}
+        </td>
+
+        <td class="text-right">
+          Rp {{ "{:,}".format(t.harga or 0) }}
+        </td>
+
+        <td class="text-center">
+
+          {% if (t.status or "")|upper == "LUNAS" %}
+
+            <span class="badge badge-success">
+              Lunas
+            </span>
+
+          {% else %}
+
+            <span class="badge badge-danger">
+              Belum Bayar
+            </span>
+
+          {% endif %}
+
+        </td>
+
+      </tr>
+
+      {% endfor %}
+
+    {% else %}
+
+      <tr>
+        <td colspan="6" class="text-center text-muted py-4">
+          Belum ada transaksi
+        </td>
+      </tr>
+
+    {% endif %}
+
+  </tbody>
+
+</table>
+
+
+  </div>
+</div>
+
+{% endblock %}

@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block content %}
+<h3>{{ router.label }} - {{ router.ip }}</h3>
+
+<h5>Pelanggan:</h5>
+<ul>
+  {% for p in router.pelanggan %}
+    <li>{{ p.nama }} | Paket: {{ p.paket }} | Harga: {{ p.harga }}</li>
+  {% endfor %}
+</ul>
+
+<h5>Tambah Pelanggan:</h5>
+<form method="post" action="{{ url_for('pelanggan.pelanggan_tambah', rid=router.id) }}">
+  <input name="nama" placeholder="Nama" required>
+  <input name="paket" placeholder="Paket" required>
+  <input name="harga" placeholder="Harga" type="number" required>
+  <button type="submit">Tambah</button>
+</form>
+
+<a href="{{ url_for('misc.dashboard') }}">⬅ Kembali</a>
+{% endblock %}

@@ -1,0 +1,1063 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="container-fluid">
+
+<!-- =============================== -->
+<!-- HEADER -->
+<!-- =============================== -->
+
+<div class="mb-3">
+    <a
+        href="{{ url_for('pelanggan.pelanggan_page') }}"
+        class="btn btn-secondary"
+    >
+        ⬅ Kembali
+    </a>
+</div>
+
+
+<!-- =============================== -->
+<!-- CARD -->
+<!-- =============================== -->
+
+<div class="card card-success">
+
+    <div class="card-header">
+        <h3 class="card-title">
+            ✏️ Edit Pelanggan
+        </h3>
+    </div>
+
+
+    <div class="card-body">
+
+        <form
+            method="POST"
+            id="formPelanggan"
+            autocomplete="off"
+        >
+
+            <!-- =============================== -->
+            <!-- NAMA -->
+            <!-- =============================== -->
+
+            <div class="form-group">
+
+                <label for="nama">
+                    Nama Pelanggan
+                </label>
+
+                <input
+                    type="text"
+                    name="nama"
+                    id="nama"
+                    class="form-control"
+                    value="{{ pelanggan.nama or '' }}"
+                    required
+                >
+
+            </div>
+
+
+            <!-- =============================== -->
+            <!-- PAKET -->
+            <!-- =============================== -->
+
+            <div class="form-group">
+
+                <label for="paket">
+                    Paket
+                </label>
+
+                <input
+                    type="text"
+                    name="paket"
+                    id="paket"
+                    class="form-control"
+                    value="{{ pelanggan.paket or '' }}"
+                    required
+                >
+
+            </div>
+
+
+            <!-- =============================== -->
+            <!-- HARGA -->
+            <!-- =============================== -->
+
+            <div class="form-group">
+
+                <label for="harga">
+                    Harga
+                </label>
+
+                <input
+                    type="number"
+                    name="harga"
+                    id="harga"
+                    class="form-control"
+                    min="0"
+                    value="{{ pelanggan.harga or 0 }}"
+                    required
+                >
+
+            </div>
+
+
+            <!-- =============================== -->
+            <!-- NO HP -->
+            <!-- =============================== -->
+
+            <div class="form-group">
+
+                <label for="no_hp">
+                    No HP
+                </label>
+
+                <input
+                    type="text"
+                    name="no_hp"
+                    id="no_hp"
+                    class="form-control"
+                    value="{{ pelanggan.no_hp or '' }}"
+                    placeholder="Contoh: 081234567890"
+                >
+
+            </div>
+
+
+            <!-- =============================== -->
+            <!-- JATUH TEMPO -->
+            <!-- =============================== -->
+
+            <div class="form-group">
+
+                <label for="jatuh_tempo">
+                    Jatuh Tempo
+                </label>
+
+                <div class="input-group">
+
+                    <!--
+                        INPUT YANG DIKIRIM KE FLASK
+
+                        FORMAT:
+                        DD/MM/YYYY
+
+                        Contoh:
+                        10/05/2026
+                    -->
+
+                    <input
+                        type="text"
+                        name="jatuh_tempo"
+                        id="jatuh_tempo"
+                        class="form-control"
+                        value="{{ pelanggan.jatuh_tempo or '' }}"
+                        placeholder="DD/MM/YYYY"
+                        maxlength="10"
+                        inputmode="numeric"
+                        required
+                    >
+
+
+                    <!--
+                        INPUT KALENDER BROWSER
+
+                        Tidak mempunyai name.
+                        Jadi tidak dikirim ke Flask.
+
+                        Nilai internal:
+                        YYYY-MM-DD
+                    -->
+
+                    <input
+                        type="date"
+                        id="kalender_jatuh_tempo"
+                        tabindex="-1"
+                        aria-hidden="true"
+                        style="
+                            position:absolute;
+                            width:1px;
+                            height:1px;
+                            opacity:0;
+                            pointer-events:none;
+                        "
+                    >
+
+
+                    <!-- =============================== -->
+                    <!-- TOMBOL KALENDER -->
+                    <!-- =============================== -->
+
+                    <div class="input-group-append">
+
+                        <button
+                            type="button"
+                            class="btn btn-outline-secondary"
+                            id="btnKalender"
+                            title="Pilih tanggal"
+                        >
+                            📅
+                        </button>
+
+                    </div>
+
+                </div>
+
+
+                <small class="text-muted">
+                    Format tanggal: <b>DD/MM/YYYY</b>
+                </small>
+
+            </div>
+
+
+            <!-- =============================== -->
+            <!-- STATUS -->
+            <!-- =============================== -->
+
+            <div class="form-group">
+
+                <label for="status">
+                    Status
+                </label>
+
+                <select
+                    name="status"
+                    id="status"
+                    class="form-control"
+                >
+
+                    <option
+                        value="AKTIF"
+                        {% if (pelanggan.status or '')|upper == 'AKTIF' %}
+                            selected
+                        {% endif %}
+                    >
+                        AKTIF
+                    </option>
+
+                    <option
+                        value="JATUH TEMPO"
+                        {% if (pelanggan.status or '')|upper == 'JATUH TEMPO' %}
+                            selected
+                        {% endif %}
+                    >
+                        JATUH TEMPO
+                    </option>
+
+                    <option
+                        value="NONAKTIF"
+                        {% if (pelanggan.status or '')|upper == 'NONAKTIF' %}
+                            selected
+                        {% endif %}
+                    >
+                        NONAKTIF
+                    </option>
+
+                </select>
+
+            </div>
+
+
+            <!-- =============================== -->
+            <!-- TIPE PELANGGAN -->
+            <!-- =============================== -->
+
+            <div class="form-group">
+
+                <label for="tipePelanggan">
+                    Tipe Pelanggan
+                </label>
+
+                <select
+                    name="tipe"
+                    id="tipePelanggan"
+                    class="form-control"
+                    required
+                >
+
+                    <option value="">
+                        -- Pilih Tipe --
+                    </option>
+
+                    <option
+                        value="DHCP"
+                        {% if (pelanggan.tipe or '')|upper == 'DHCP' %}
+                            selected
+                        {% endif %}
+                    >
+                        DHCP
+                    </option>
+
+                    <option
+                        value="PPPoE"
+                        {% if (pelanggan.tipe or '')|upper == 'PPPOE' %}
+                            selected
+                        {% endif %}
+                    >
+                        PPPoE
+                    </option>
+
+                </select>
+
+            </div>
+
+
+            <!-- =============================== -->
+            <!-- IP ADDRESS -->
+            <!-- =============================== -->
+
+            <div class="form-group">
+
+                <label for="ip_address">
+                    IP Address
+                </label>
+
+                <input
+                    type="text"
+                    name="ip_address"
+                    id="ip_address"
+                    class="form-control"
+                    value="{{ pelanggan.ip_address or '' }}"
+                    placeholder="Contoh: 192.168.2.4"
+                >
+
+            </div>
+
+
+            <!-- =============================== -->
+            <!-- DHCP FIELDS -->
+            <!-- =============================== -->
+
+            <div
+                id="dhcpFields"
+                style="display:none;"
+            >
+
+                <div class="form-group">
+
+                    <label for="mac_address">
+                        MAC Address
+                    </label>
+
+                    <input
+                        type="text"
+                        name="mac_address"
+                        id="mac_address"
+                        class="form-control"
+                        value="{{ pelanggan.mac_address or '' }}"
+                        placeholder="C8:3A:35:90:13:30"
+                    >
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="host">
+                        Host / Hostname
+                    </label>
+
+                    <input
+                        type="text"
+                        name="host"
+                        id="host"
+                        class="form-control"
+                        value="{{ pelanggan.host or '' }}"
+                        placeholder="Contoh: Redmi-14C"
+                    >
+
+                </div>
+
+            </div>
+
+
+            <!-- =============================== -->
+            <!-- PPPOE FIELDS -->
+            <!-- =============================== -->
+
+            <div
+                id="pppoeFields"
+                style="display:none;"
+            >
+
+                <div class="form-group">
+
+                    <label for="pppoe_username">
+                        PPPoE User
+                    </label>
+
+                    <input
+                        type="text"
+                        name="pppoe_username"
+                        id="pppoe_username"
+                        class="form-control"
+                        value="{{ pelanggan.pppoe_username or '' }}"
+                        placeholder="Username PPPoE"
+                    >
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="pppoe_password">
+                        PPPoE Pass
+                    </label>
+
+                    <input
+                        type="text"
+                        name="pppoe_password"
+                        id="pppoe_password"
+                        class="form-control"
+                        value="{{ pelanggan.pppoe_password or '' }}"
+                        placeholder="Password PPPoE"
+                    >
+
+                </div>
+
+            </div>
+
+
+            <!-- =============================== -->
+            <!-- ROUTER -->
+            <!-- =============================== -->
+
+            <div class="form-group">
+
+                <label for="router_id">
+                    Router MikroTik
+                </label>
+
+                <select
+                    name="router_id"
+                    id="router_id"
+                    class="form-control"
+                    required
+                >
+
+                    <option value="">
+                        -- Pilih Router --
+                    </option>
+
+                    {% for r in mikrotik %}
+
+                    <option
+                        value="{{ r.id }}"
+                        {% if r.id|string == pelanggan.router_id|string %}
+                            selected
+                        {% endif %}
+                    >
+                        {{ r.label }} ({{ r.host }})
+                    </option>
+
+                    {% endfor %}
+
+                </select>
+
+            </div>
+
+
+            <!-- =============================== -->
+            <!-- TOMBOL -->
+            <!-- =============================== -->
+
+            <div class="mt-4">
+
+                <button
+                    type="submit"
+                    class="btn btn-success"
+                    id="btnSimpan"
+                >
+                    💾 Simpan Perubahan
+                </button>
+
+
+                <a
+                    href="{{ url_for('pelanggan.pelanggan_page') }}"
+                    class="btn btn-secondary"
+                >
+                    Batal
+                </a>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+```
+
+</div>
+
+<!-- ====================================================== -->
+
+<!-- JAVASCRIPT -->
+
+<!-- ====================================================== -->
+
+<script>
+
+document.addEventListener(
+    "DOMContentLoaded",
+    function () {
+
+        // ==================================================
+        // ELEMENT
+        // ==================================================
+
+        const form =
+            document.getElementById("formPelanggan");
+
+        const jatuhTempo =
+            document.getElementById("jatuh_tempo");
+
+        const kalender =
+            document.getElementById("kalender_jatuh_tempo");
+
+        const btnKalender =
+            document.getElementById("btnKalender");
+
+        const tipe =
+            document.getElementById("tipePelanggan");
+
+        const dhcpFields =
+            document.getElementById("dhcpFields");
+
+        const pppoeFields =
+            document.getElementById("pppoeFields");
+
+        const macAddress =
+            document.getElementById("mac_address");
+
+        const pppoeUsername =
+            document.getElementById("pppoe_username");
+
+        const pppoePassword =
+            document.getElementById("pppoe_password");
+
+
+        // ==================================================
+        // KONVERSI TANGGAL
+        //
+        // FORMAT APLIKASI:
+        // DD/MM/YYYY
+        //
+        // Contoh:
+        // 05/10/2026 = 5 Oktober 2026
+        // ==================================================
+
+        function formatTanggal(tanggal) {
+
+            if (!tanggal) {
+                return "";
+            }
+
+            tanggal = String(tanggal).trim();
+
+            // Database: DD/MM/YYYY
+            if (/^\d{2}\/\d{2}\/\d{4}$/.test(tanggal)) {
+                return tanggal;
+            }
+
+            // Kalender browser: YYYY-MM-DD
+            if (/^\d{4}-\d{2}-\d{2}$/.test(tanggal)) {
+
+                const bagian = tanggal.split("-");
+
+                return (
+                    bagian[2] +
+                    "/" +
+                    bagian[1] +
+                    "/" +
+                    bagian[0]
+                );
+            }
+
+            return "";
+        }
+
+
+        // ==================================================
+        // DD/MM/YYYY
+        // MENJADI YYYY-MM-DD
+        // UNTUK KALENDER BROWSER
+        // ==================================================
+
+        function tanggalUntukKalender(tanggal) {
+
+            if (!tanggal) {
+                return "";
+            }
+
+            const cocok =
+                String(tanggal)
+                    .trim()
+                    .match(
+                        /^(\d{2})\/(\d{2})\/(\d{4})$/
+                    );
+
+            if (!cocok) {
+                return "";
+            }
+
+            const hari = cocok[1];
+            const bulan = cocok[2];
+            const tahun = cocok[3];
+
+            return (
+                tahun +
+                "-" +
+                bulan +
+                "-" +
+                hari
+            );
+        }
+
+
+        // ==================================================
+        // YYYY-MM-DD
+        // MENJADI DD/MM/YYYY
+        // ==================================================
+
+        function dariKalender(tanggal) {
+
+            if (!tanggal) {
+                return "";
+            }
+
+            const bagian = tanggal.split("-");
+
+            if (bagian.length !== 3) {
+                return "";
+            }
+
+            return (
+                bagian[2] +
+                "/" +
+                bagian[1] +
+                "/" +
+                bagian[0]
+            );
+        }
+
+
+        // ==================================================
+        // NORMALISASI NILAI SAAT HALAMAN DIBUKA
+        // ==================================================
+
+        const nilaiAwal =
+            jatuhTempo.value.trim();
+
+
+        /*
+         * Catatan:
+         *
+         * Untuk data lama DD/MM/YYYY,
+         * tidak boleh langsung dianggap DD/MM/YYYY
+         * karena posisi bulan/hari berbeda.
+         *
+         * Jika backend/database Anda saat ini
+         * memang menggunakan DD/MM/YYYY,
+         * nilai tersebut dikonversi di bawah.
+         */
+
+
+        let tanggalTampil = "";
+
+
+        if (
+            /^\d{4}-\d{2}-\d{2}$/.test(nilaiAwal)
+        ) {
+
+            tanggalTampil =
+                dariKalender(nilaiAwal);
+
+        }
+
+
+        /*
+         * Untuk format DD/MM/YYYY,
+         * gunakan langsung.
+         */
+
+        else if (
+            /^\d{2}\/\d{2}\/\d{4}$/.test(nilaiAwal)
+        ) {
+
+            /*
+             * Nilai database yang sudah baru
+             * dianggap DD/MM/YYYY.
+             */
+
+            tanggalTampil =
+                nilaiAwal;
+
+        }
+
+
+        if (tanggalTampil) {
+
+            jatuhTempo.value =
+                tanggalTampil;
+
+            kalender.value =
+                tanggalUntukKalender(
+                    tanggalTampil
+                );
+
+        }
+
+
+        // ==================================================
+        // TOMBOL KALENDER
+        // ==================================================
+
+        btnKalender.addEventListener(
+            "click",
+            function () {
+
+                try {
+
+                    if (
+                        typeof kalender.showPicker ===
+                        "function"
+                    ) {
+
+                        kalender.showPicker();
+
+                    } else {
+
+                        kalender.focus();
+                        kalender.click();
+
+                    }
+
+                } catch (error) {
+
+                    kalender.focus();
+                    kalender.click();
+
+                }
+
+            }
+        );
+
+
+        // ==================================================
+        // KETIKA MEMILIH TANGGAL
+        // ==================================================
+
+        kalender.addEventListener(
+            "change",
+            function () {
+
+                if (!kalender.value) {
+
+                    jatuhTempo.value = "";
+
+                    return;
+
+                }
+
+
+                /*
+                 * Browser:
+                 *
+                 * 2026-10-05
+                 *
+                 * Menjadi:
+                 *
+                 * 05/10/2026
+                 */
+
+                jatuhTempo.value =
+                    dariKalender(
+                        kalender.value
+                    );
+
+            }
+        );
+
+
+        // ==================================================
+        // INPUT MANUAL
+        //
+        // FORMAT INPUT:
+        // DDMMYYYY
+        //
+        // OTOMATIS:
+        // DD/MM/YYYY
+        // ==================================================
+
+        jatuhTempo.addEventListener(
+            "input",
+            function () {
+
+                let angka =
+                    jatuhTempo.value
+                        .replace(/[^\d]/g, "");
+
+
+                angka =
+                    angka.substring(0, 8);
+
+
+                if (angka.length >= 5) {
+
+                    angka =
+                        angka.substring(0, 2) +
+                        "/" +
+                        angka.substring(2, 4) +
+                        "/" +
+                        angka.substring(4);
+
+                }
+
+                else if (angka.length >= 3) {
+
+                    angka =
+                        angka.substring(0, 2) +
+                        "/" +
+                        angka.substring(2);
+
+                }
+
+
+                jatuhTempo.value =
+                    angka;
+
+
+                const tanggalKalender =
+                    tanggalUntukKalender(angka);
+
+
+                if (tanggalKalender) {
+
+                    kalender.value =
+                        tanggalKalender;
+
+                } else {
+
+                    kalender.value = "";
+
+                }
+
+            }
+        );
+
+
+        // ==================================================
+        // VALIDASI TANGGAL
+        //
+        // FORMAT:
+        // DD/MM/YYYY
+        //
+        // Contoh:
+        // 05/10/2026 = 5 Oktober 2026
+        // ==================================================
+
+        function tanggalValid(tanggal) {
+
+            const cocok =
+                tanggal.match(
+                    /^(\d{2})\/(\d{2})\/(\d{4})$/
+                );
+
+            if (!cocok) {
+                return false;
+            }
+
+            // DD/MM/YYYY
+            const hari =
+                parseInt(cocok[1], 10);
+
+            const bulan =
+                parseInt(cocok[2], 10);
+
+            const tahun =
+                parseInt(cocok[3], 10);
+
+            if (
+                bulan < 1 ||
+                bulan > 12
+            ) {
+                return false;
+            }
+
+            if (
+                hari < 1 ||
+                hari > 31
+            ) {
+                return false;
+            }
+
+            const date =
+                new Date(
+                    tahun,
+                    bulan - 1,
+                    hari
+                );
+
+            return (
+                date.getFullYear() === tahun &&
+                date.getMonth() === bulan - 1 &&
+                date.getDate() === hari
+            );
+
+        }
+
+
+        // ==================================================
+        // TIPE PELANGGAN
+        // ==================================================
+
+        function updateFormTipe() {
+
+            const value =
+                (
+                    tipe.value || ""
+                ).toUpperCase();
+
+
+            dhcpFields.style.display =
+                "none";
+
+            pppoeFields.style.display =
+                "none";
+
+
+            if (macAddress) {
+                macAddress.required = false;
+            }
+
+            if (pppoeUsername) {
+                pppoeUsername.required = false;
+            }
+
+            if (pppoePassword) {
+                pppoePassword.required = false;
+            }
+
+
+            // ==============================
+            // DHCP
+            // ==============================
+
+            if (value === "DHCP") {
+
+                dhcpFields.style.display =
+                    "block";
+
+                if (macAddress) {
+
+                    macAddress.required =
+                        true;
+
+                }
+
+            }
+
+
+            // ==============================
+            // PPPOE
+            // ==============================
+
+            if (value === "PPPOE") {
+
+                pppoeFields.style.display =
+                    "block";
+
+                if (pppoeUsername) {
+
+                    pppoeUsername.required =
+                        true;
+
+                }
+
+                if (pppoePassword) {
+
+                    pppoePassword.required =
+                        true;
+
+                }
+
+            }
+
+        }
+
+
+        tipe.addEventListener(
+            "change",
+            updateFormTipe
+        );
+
+
+        updateFormTipe();
+
+
+        // ==================================================
+        // VALIDASI SEBELUM SIMPAN
+        // ==================================================
+
+        form.addEventListener(
+            "submit",
+            function (event) {
+
+                const tanggal =
+                    jatuhTempo.value.trim();
+
+
+                if (
+                    !tanggalValid(tanggal)
+                ) {
+
+                    event.preventDefault();
+
+
+                    alert(
+                        "Jatuh Tempo tidak valid.\n\n" +
+                        "Gunakan format DD/MM/YYYY.\n" +
+                        "Contoh: 05/10/2026"
+                    );
+
+
+                    jatuhTempo.focus();
+
+                    return false;
+
+                }
+
+
+                /*
+                 * Flask menerima:
+                 *
+                 * DD/MM/YYYY
+                 *
+                 * Contoh:
+                 * 05/10/2026 = 5 Oktober 2026
+                 */
+
+                console.log(
+                    "Jatuh Tempo dikirim:",
+                    tanggal
+                );
+
+
+                return true;
+
+            }
+        );
+
+    }
+
+);
+
+</script>
+
+{% endblock %}

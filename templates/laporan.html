@@ -1,0 +1,924 @@
+
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Laporan</title>
+
+<style>
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    padding: 20px;
+    background: #f4f6f9;
+    font-family: Arial, Helvetica, sans-serif;
+    color: #333;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 20px auto;
+}
+
+.card {
+    background: #fff;
+    border-radius: 14px;
+    overflow: hidden;
+    box-shadow: 0 5px 20px rgba(0,0,0,.10);
+}
+
+.header {
+    background: #343a40;
+    color: #fff;
+    padding: 25px;
+}
+
+.header h1 {
+    margin: 0;
+    font-size: 26px;
+}
+
+.header p {
+    margin: 8px 0 0;
+    opacity: .85;
+}
+
+
+/* ==================================================
+   FILTER
+   ================================================== */
+
+.filter {
+    padding: 20px;
+    background: #f8f9fa;
+    border-bottom: 1px solid #eee;
+}
+
+.filter form {
+    display: flex;
+    gap: 10px;
+    align-items: end;
+    flex-wrap: wrap;
+}
+
+.filter-group {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.filter-group label {
+    font-size: 12px;
+    font-weight: bold;
+    color: #666;
+}
+
+.filter select,
+.filter button {
+    height: 40px;
+    border-radius: 7px;
+    border: 1px solid #ccc;
+    padding: 0 12px;
+    font-size: 14px;
+}
+
+.filter button {
+    background: #343a40;
+    color: white;
+    border: none;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.filter button:hover {
+    opacity: .9;
+}
+
+
+/* ==================================================
+   JUDUL
+   ================================================== */
+
+.judul-laporan {
+    padding: 20px 20px 5px;
+}
+
+.judul-laporan h2 {
+    margin: 0;
+    font-size: 21px;
+}
+
+.judul-laporan p {
+    margin: 6px 0 0;
+    color: #777;
+}
+
+
+/* ==================================================
+   SUMMARY
+   ================================================== */
+
+.summary {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 15px;
+    padding: 20px;
+}
+
+.box {
+    background: #fff;
+    border: 1px solid #e5e5e5;
+    border-radius: 12px;
+    padding: 20px;
+}
+
+.box-title {
+    color: #777;
+    font-size: 13px;
+    margin-bottom: 8px;
+}
+
+.number {
+    font-size: 26px;
+    font-weight: bold;
+}
+
+.nominal {
+    margin-top: 6px;
+    font-size: 14px;
+    color: #555;
+}
+
+
+/* ==================================================
+   SECTION
+   ================================================== */
+
+.section {
+    padding: 20px;
+    border-top: 1px solid #eee;
+}
+
+.section h2 {
+    margin-top: 0;
+    font-size: 20px;
+}
+
+
+/* ==================================================
+   TABLE
+   ================================================== */
+
+.table-wrap {
+    overflow-x: auto;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+th {
+    background: #f1f3f5;
+    padding: 13px 10px;
+    text-align: left;
+    font-size: 13px;
+    white-space: nowrap;
+}
+
+td {
+    padding: 13px 10px;
+    border-bottom: 1px solid #eee;
+    font-size: 14px;
+}
+
+tr:hover {
+    background: #fafafa;
+}
+
+.rupiah {
+    font-weight: bold;
+}
+
+
+/* ==================================================
+   BADGE
+   ================================================== */
+
+.badge {
+    display: inline-block;
+    padding: 6px 10px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: bold;
+}
+
+.badge-lunas {
+    background: #d1e7dd;
+    color: #0f5132;
+}
+
+.badge-belum {
+    background: #fff3cd;
+    color: #664d03;
+}
+
+
+/* ==================================================
+   FOOTER
+   ================================================== */
+
+.footer {
+    padding: 15px;
+    text-align: center;
+    color: #888;
+    font-size: 12px;
+}
+
+
+/* ==================================================
+   RESPONSIVE
+   ================================================== */
+
+@media (max-width: 900px) {
+
+    .summary {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+}
+
+@media (max-width: 600px) {
+
+    body {
+        padding: 10px;
+    }
+
+    .summary {
+        grid-template-columns: 1fr;
+    }
+
+    .filter form {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .filter-group,
+    .filter select,
+    .filter button {
+        width: 100%;
+    }
+
+    th,
+    td {
+        font-size: 12px;
+    }
+
+}
+
+</style>
+
+</head>
+
+
+<body>
+
+<div class="container">
+
+<div class="card">
+
+
+<!-- ==================================================
+     HEADER
+     ================================================== -->
+
+<div class="header">
+
+    <h1>
+        Laporan Keuangan
+    </h1>
+
+    <p>
+        Laporan bulanan dan tahunan Manajemen ISP
+    </p>
+
+</div>
+
+
+<!-- ==================================================
+     FILTER BULAN DAN TAHUN
+     ================================================== -->
+
+<div class="filter">
+
+    <form method="get" action="{{ url_for('laporan.laporan_page') }}">
+
+        <div class="filter-group">
+
+            <label>
+                Bulan
+            </label>
+
+            <select name="bulan">
+
+                {% for nomor in range(1, 13) %}
+
+                    <option
+                        value="{{ nomor }}"
+                        {% if nomor == bulan %}
+                            selected
+                        {% endif %}
+                    >
+                        {{
+                            [
+                                '',
+                                'Januari',
+                                'Februari',
+                                'Maret',
+                                'April',
+                                'Mei',
+                                'Juni',
+                                'Juli',
+                                'Agustus',
+                                'September',
+                                'Oktober',
+                                'November',
+                                'Desember'
+                            ][nomor]
+                        }}
+                    </option>
+
+                {% endfor %}
+
+            </select>
+
+        </div>
+
+
+        <div class="filter-group">
+
+            <label>
+                Tahun
+            </label>
+
+            <select name="tahun">
+
+                {% for t in range(tahun - 3, tahun + 4) %}
+
+                    <option
+                        value="{{ t }}"
+                        {% if t == tahun %}
+                            selected
+                        {% endif %}
+                    >
+                        {{ t }}
+                    </option>
+
+                {% endfor %}
+
+            </select>
+
+        </div>
+
+
+        <div class="filter-group">
+
+            <label>
+                &nbsp;
+            </label>
+
+            <button type="submit">
+                Tampilkan Laporan
+            </button>
+
+        </div>
+
+    </form>
+
+</div>
+
+
+<!-- ==================================================
+     LAPORAN BULANAN
+     ================================================== -->
+
+<div class="judul-laporan">
+
+    <h2>
+        Laporan Bulan {{ bulan_nama }} {{ tahun }}
+    </h2>
+
+    <p>
+        Ringkasan tagihan dan pembayaran bulan yang dipilih
+    </p>
+
+</div>
+
+
+<div class="summary">
+
+
+    <div class="box">
+
+        <div class="box-title">
+            Total Tagihan
+        </div>
+
+        <div class="number">
+            {{ total_tagihan }}
+        </div>
+
+        <div class="nominal">
+            Rp {{
+                "{:,.0f}".format(
+                    nominal_tagihan
+                ).replace(",", ".")
+            }}
+        </div>
+
+    </div>
+
+
+    <div class="box">
+
+        <div class="box-title">
+            Tagihan Lunas
+        </div>
+
+        <div class="number">
+            {{ jumlah_lunas }}
+        </div>
+
+        <div class="nominal">
+            Rp {{
+                "{:,.0f}".format(
+                    nominal_lunas
+                ).replace(",", ".")
+            }}
+        </div>
+
+    </div>
+
+
+    <div class="box">
+
+        <div class="box-title">
+            Belum Bayar
+        </div>
+
+        <div class="number">
+            {{ jumlah_belum }}
+        </div>
+
+        <div class="nominal">
+            Rp {{
+                "{:,.0f}".format(
+                    nominal_belum
+                ).replace(",", ".")
+            }}
+        </div>
+
+    </div>
+
+
+    <div class="box">
+
+        <div class="box-title">
+            Total Pembayaran
+        </div>
+
+        <div class="number">
+            {{ total_transaksi }}
+        </div>
+
+        <div class="nominal">
+            Rp {{
+                "{:,.0f}".format(
+                    total_transaksi_nominal
+                ).replace(",", ".")
+            }}
+        </div>
+
+    </div>
+
+
+</div>
+
+
+<!-- ==================================================
+     DETAIL BULANAN
+     ================================================== -->
+
+<div class="section">
+
+    <h2>
+        Detail Laporan Bulanan
+    </h2>
+
+    <div class="table-wrap">
+
+        <table>
+
+            <thead>
+
+                <tr>
+
+                    <th>
+                        Keterangan
+                    </th>
+
+                    <th>
+                        Jumlah
+                    </th>
+
+                    <th>
+                        Nominal
+                    </th>
+
+                </tr>
+
+            </thead>
+
+            <tbody>
+
+                <tr>
+
+                    <td>
+                        Total Pelanggan
+                    </td>
+
+                    <td>
+                        {{ total_pelanggan }}
+                    </td>
+
+                    <td>
+                        -
+                    </td>
+
+                </tr>
+
+
+                <tr>
+
+                    <td>
+                        Total Tagihan
+                    </td>
+
+                    <td>
+                        {{ total_tagihan }}
+                    </td>
+
+                    <td class="rupiah">
+                        Rp {{
+                            "{:,.0f}".format(
+                                nominal_tagihan
+                            ).replace(",", ".")
+                        }}
+                    </td>
+
+                </tr>
+
+
+                <tr>
+
+                    <td>
+                        Tagihan Lunas
+                    </td>
+
+                    <td>
+                        {{ jumlah_lunas }}
+                    </td>
+
+                    <td class="rupiah">
+                        Rp {{
+                            "{:,.0f}".format(
+                                nominal_lunas
+                            ).replace(",", ".")
+                        }}
+                    </td>
+
+                </tr>
+
+
+                <tr>
+
+                    <td>
+                        Tagihan Belum Lunas
+                    </td>
+
+                    <td>
+                        {{ jumlah_belum }}
+                    </td>
+
+                    <td class="rupiah">
+                        Rp {{
+                            "{:,.0f}".format(
+                                nominal_belum
+                            ).replace(",", ".")
+                        }}
+                    </td>
+
+                </tr>
+
+
+                <tr>
+
+                    <td>
+                        Pembayaran Diterima
+                    </td>
+
+                    <td>
+                        {{ total_transaksi }}
+                    </td>
+
+                    <td class="rupiah">
+                        Rp {{
+                            "{:,.0f}".format(
+                                total_transaksi_nominal
+                            ).replace(",", ".")
+                        }}
+                    </td>
+
+                </tr>
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+</div>
+
+
+<!-- ==================================================
+     METODE PEMBAYARAN
+     ================================================== -->
+
+<div class="section">
+
+    <h2>
+        Pembayaran Berdasarkan Metode
+    </h2>
+
+    {% if metode_list %}
+
+        <div class="table-wrap">
+
+            <table>
+
+                <thead>
+
+                    <tr>
+
+                        <th>
+                            Metode Pembayaran
+                        </th>
+
+                        <th>
+                            Jumlah Transaksi
+                        </th>
+
+                        <th>
+                            Nominal
+                        </th>
+
+                    </tr>
+
+                </thead>
+
+
+                <tbody>
+
+                {% for item in metode_list %}
+
+                    <tr>
+
+                        <td>
+                            {{ item.get('metode', 'Tidak diketahui') }}
+                        </td>
+
+                        <td>
+                            {{ item.get('jumlah', 0) }}
+                        </td>
+
+                        <td class="rupiah">
+
+                            Rp {{
+                                "{:,.0f}".format(
+                                    item.get(
+                                        'nominal',
+                                        0
+                                    ) or 0
+                                ).replace(",", ".")
+                            }}
+
+                        </td>
+
+                    </tr>
+
+                {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    {% else %}
+
+        <p style="color:#777;">
+            Belum ada data pembayaran.
+        </p>
+
+    {% endif %}
+
+</div>
+
+
+<!-- ==================================================
+     LAPORAN TAHUNAN
+     ================================================== -->
+
+<div class="section">
+
+    <h2>
+        Laporan Tahunan {{ tahun }}
+    </h2>
+
+    <p style="color:#777;">
+        Rekapitulasi tagihan selama Januari sampai Desember {{ tahun }}
+    </p>
+
+
+    <div class="table-wrap">
+
+        <table>
+
+            <thead>
+
+                <tr>
+
+                    <th>
+                        Bulan
+                    </th>
+
+                    <th>
+                        Jumlah Tagihan
+                    </th>
+
+                    <th>
+                        Total Tagihan
+                    </th>
+
+                    <th>
+                        Lunas
+                    </th>
+
+                    <th>
+                        Pembayaran
+                    </th>
+
+                    <th>
+                        Belum Bayar
+                    </th>
+
+                </tr>
+
+            </thead>
+
+
+            <tbody>
+
+            {% for item in laporan_tahunan %}
+
+                <tr>
+
+                    <td>
+                        <strong>
+                            {{ item.nama_bulan }}
+                        </strong>
+                    </td>
+
+
+                    <td>
+                        {{ item.jumlah_tagihan }}
+                    </td>
+
+
+                    <td class="rupiah">
+                        Rp {{
+                            "{:,.0f}".format(
+                                item.nominal_tagihan
+                            ).replace(",", ".")
+                        }}
+                    </td>
+
+
+                    <td>
+                        {{ item.jumlah_lunas }}
+                    </td>
+
+
+                    <td class="rupiah">
+                        Rp {{
+                            "{:,.0f}".format(
+                                item.nominal_lunas
+                            ).replace(",", ".")
+                        }}
+                    </td>
+
+
+                    <td class="rupiah">
+                        Rp {{
+                            "{:,.0f}".format(
+                                item.nominal_belum
+                            ).replace(",", ".")
+                        }}
+                    </td>
+
+                </tr>
+
+            {% endfor %}
+
+            </tbody>
+
+
+            <tfoot>
+
+                <tr style="background:#f8f9fa;">
+
+                    <th>
+                        TOTAL {{ tahun }}
+                    </th>
+
+                    <th>
+                        -
+                    </th>
+
+                    <th class="rupiah">
+                        Rp {{
+                            "{:,.0f}".format(
+                                total_tahunan_tagihan
+                            ).replace(",", ".")
+                        }}
+                    </th>
+
+                    <th>
+                        -
+                    </th>
+
+                    <th class="rupiah">
+                        Rp {{
+                            "{:,.0f}".format(
+                                total_tahunan_lunas
+                            ).replace(",", ".")
+                        }}
+                    </th>
+
+                    <th class="rupiah">
+                        Rp {{
+                            "{:,.0f}".format(
+                                total_tahunan_belum
+                            ).replace(",", ".")
+                        }}
+                    </th>
+
+                </tr>
+
+            </tfoot>
+
+        </table>
+
+    </div>
+
+</div>
+
+
+<!-- ==================================================
+     FOOTER
+     ================================================== -->
+
+<div class="footer">
+
+    Laporan Manajemen ISP
+
+</div>
+
+
+</div>
+
+</div>
+
+</body>
+
+</html>
+

@@ -1,0 +1,1 @@
+IS_DEBUG = True  # False kalau mau produksi

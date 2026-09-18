@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block content %}
+
+<h4>Hasil Sinkron</h4>
+<ul>
+  {% for h in hasil %}
+    <li>{{ h }}</li>
+  {% endfor %}
+</ul>
+<a href="/admin" class="btn btn-primary">Kembali</a>
+
+{% endblock %}

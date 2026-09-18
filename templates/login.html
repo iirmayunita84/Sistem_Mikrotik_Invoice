@@ -1,0 +1,101 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="container" style="max-width:420px;margin-top:80px;">
+    <div class="card shadow">
+        <div class="card-body">
+
+            <h3 class="text-center mb-4">
+                🔐 Login Admin
+            </h3>
+
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, msg in messages %}
+                        <div class="alert alert-{{ category if category!='message' else 'danger' }}">
+                            {{ msg }}
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+
+            <form method="post">
+
+                <div class="mb-3">
+                    <input
+                        type="text"
+                        class="form-control"
+                        name="username"
+                        placeholder="Username"
+                        autocomplete="username"
+                        required
+                        autofocus>
+                </div>
+
+                <div class="mb-3 position-relative">
+
+                    <input
+                        id="password"
+                        type="password"
+                        class="form-control"
+                        name="password"
+                        placeholder="Password"
+                        autocomplete="current-password"
+                        required>
+
+                    <button
+                        type="button"
+                        onclick="togglePassword()"
+                        class="btn btn-sm"
+                        style="position:absolute;right:8px;top:6px;border:none;background:none;font-size:18px;">
+
+                        <span id="eye">👁</span>
+
+                    </button>
+
+                </div>
+
+                <button
+                    class="btn btn-primary w-100"
+                    type="submit">
+
+                    Login
+
+                </button>
+
+            </form>
+
+            <hr>
+
+            <div class="text-center">
+
+                <a href="{{ url_for('misc.lupa_password') }}">
+                    🔑 Lupa Password Admin?
+                </a>
+
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<script>
+
+function togglePassword(){
+
+    const pass=document.getElementById("password");
+    const eye=document.getElementById("eye");
+
+    if(pass.type==="password"){
+        pass.type="text";
+        eye.innerHTML="🙈";
+    }else{
+        pass.type="password";
+        eye.innerHTML="👁";
+    }
+
+}
+
+</script>
+
+{% endblock %}

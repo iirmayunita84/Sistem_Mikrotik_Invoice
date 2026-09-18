@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Dashboard PPPoE</title>
+</head>
+<body>
+<h2>Daftar Pelanggan</h2>
+<table border="1" cellpadding="5" cellspacing="0">
+    <tr>
+        <th>Nama</th>
+        <th>PPPoE User</th>
+        <th>Status PPPoE</th>
+    </tr>
+    {% for p in pelanggan %}
+    <tr>
+        <td>{{ p.nama }}</td>
+        <td>{{ p.pppoe_user or "Kosong" }}</td>
+        <td>
+        {% if p.pppoe_user %}
+          <label class="switch">
+            <input type="checkbox" class="pppoe-switch" data-id="{{ p.id }}" {% if p.pppoe_status=='ON' %}checked{% endif %}>
+            <span class="slider round"></span>
+          </label>
+        {% else %}
+          -
+        {% endif %}
+        </td>
+    </tr>
+    {% endfor %}
+</table>
+
+<style>
+/* Switch CSS */
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 50px;
+  height: 24px;
+}
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background-color: #ccc;
+  transition: .4s;
+  border-radius: 24px;
+}
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 18px;
+  width: 18px;
+  left: 3px;
+  bottom: 3px;
+  background-color: white;
+  transition: .4s;
+  border-radius: 50%;
+}
+input:checked + .slider {
+  background-color: #4CAF50;
+}
+input:checked + .slider:before {
+  transform: translateX(26px);
+}
+</style>
+
+</body>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+$(document).ready(function(){
+  $(".pppoe-switch").change(function(){
+    var cb = $(this);
+    var pid = cb.data("id");
+    var action = cb.is(":checked") ? "on" : "off";
+
+    cb.prop("disabled", true);
+
+    $.post("/ajax/toggle_pppoe", { pelanggan_id: pid, action: action })
+      .done(function(resp){
+        if(resp.status !== "ok"){
+          alert(resp.msg);
+          cb.prop("checked", !cb.is(":checked")); // revert
+        }
+      })
+      .fail(function(){
+        alert("Terjadi error server");
+        cb.prop("checked", !cb.is(":checked")); // revert
+      })
+      .always(function(){
+        cb.prop("disabled", false);
+      });
+  });
+});
+</script>
+
+
+</html>

@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="card shadow">
+  <div class="card-header">
+    <h4>📲 WA Reminder 
+      {% if hari < 0 %}
+        (Terlambat {{ -hari }} hari)
+      {% elif hari == 0 %}
+        (Jatuh Tempo Hari Ini)
+      {% else %}
+        (H-{{ hari }})
+      {% endif %}
+    </h4>
+  </div>
+
+  <div class="card-body">
+
+    {% if links %}
+      <p>Klik tombol di bawah untuk kirim pesan satu per satu:</p>
+
+      {% for item in links %}
+        <div class="border rounded p-3 mb-3">
+          <strong>{{ item.nama }}</strong><br>
+          📦 Paket: {{ item.paket }}<br>
+          📞 {{ item.no_hp }}<br>
+
+          <a href="{{ item.url }}" 
+             target="_blank"
+             class="btn btn-success mt-2">
+            📲 Kirim WhatsApp
+          </a>
+        </div>
+      {% endfor %}
+
+    {% else %}
+      <div class="alert alert-info">
+        Tidak ada pelanggan untuk reminder ini
+      </div>
+    {% endif %}
+
+  </div>
+</div>
+{% endblock %}

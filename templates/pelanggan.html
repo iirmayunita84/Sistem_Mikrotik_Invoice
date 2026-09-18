@@ -1,0 +1,1033 @@
+
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1">
+
+    <title>Data Pelanggan - ISP Billing</title>
+
+    <link rel="stylesheet"
+          href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
+
+    <style>
+        body {
+            background: #f4f6f9;
+        }
+
+        .page-header {
+            background: #ffffff;
+            border-radius: 10px;
+            padding: 18px 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,.06);
+        }
+
+        .page-title {
+            font-weight: 600;
+            color: #343a40;
+        }
+
+        .card {
+            border: 0;
+            border-radius: 10px;
+        }
+
+        .table thead th {
+            vertical-align: middle;
+            white-space: nowrap;
+        }
+
+        .table td {
+            vertical-align: middle;
+        }
+
+        .aksi-btn {
+            min-width: 36px;
+            margin: 2px;
+        }
+
+        .search-box {
+            border-radius: 7px;
+        }
+
+        .stat-box {
+            background: #ffffff;
+            border-radius: 10px;
+            padding: 14px 18px;
+            box-shadow: 0 2px 8px rgba(0,0,0,.05);
+        }
+
+        .stat-number {
+            font-size: 22px;
+            font-weight: 700;
+        }
+
+        .stat-label {
+            font-size: 13px;
+            color: #6c757d;
+        }
+
+        .badge-status {
+            min-width: 90px;
+            padding: 6px 9px;
+        }
+
+        .table-info td {
+            background-color: #e8f7fb !important;
+        }
+
+        .customer-name {
+            font-weight: 600;
+        }
+
+        .customer-type {
+            font-size: 11px;
+            color: #6c757d;
+        }
+
+        .empty-box {
+            padding: 50px 20px;
+            text-align: center;
+            color: #6c757d;
+        }
+
+        .toolbar {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 8px;
+        }
+
+        @media (max-width: 768px) {
+
+            .page-header {
+                padding: 15px;
+            }
+
+            .header-actions {
+                margin-top: 15px;
+                width: 100%;
+            }
+
+            .header-actions a,
+            .header-actions button {
+                margin-bottom: 5px;
+            }
+
+            .table {
+                min-width: 1000px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container-fluid mt-4 mb-5">
+
+    <!-- =====================================================
+         HEADER
+         ===================================================== -->
+
+    <div class="page-header mb-4">
+
+        <div class="row align-items-center">
+
+            <div class="col-md-5">
+
+                <div class="page-title h4 mb-1">
+                    Data Pelanggan
+                </div>
+
+                <div class="text-muted small">
+                    Kelola pelanggan ISP, tagihan, pembayaran dan koneksi MikroTik.
+                </div>
+
+            </div>
+
+
+            <div class="col-md-7 text-md-right header-actions">
+
+                <!-- SINKRON SEMUA -->
+
+                <form action="/sinkron-semua"
+                      method="POST"
+                      class="d-inline"
+                      onsubmit="return confirm('Sinkron semua router MikroTik sekarang?');">
+
+                    <button type="submit"
+                            class="btn btn-primary btn-sm">
+
+                        🔄 Sinkron Semua MikroTik
+
+                    </button>
+
+                </form>
+
+
+                <!-- TAMBAH -->
+
+                <a href="{{ url_for('pelanggan.pelanggan_tambah') }}"
+                   class="btn btn-success btn-sm">
+
+                    ➕ Tambah Pelanggan
+
+                </a>
+
+
+                <!-- DASHBOARD -->
+
+                <a href="{{ url_for('misc.dashboard') }}"
+                   class="btn btn-outline-secondary btn-sm">
+
+                    🏠 Dashboard
+
+                </a>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- =====================================================
+         STATISTIK
+         ===================================================== -->
+
+    <div class="row mb-4">
+
+        <div class="col-md-3 mb-3">
+
+            <div class="stat-box">
+
+                <div class="stat-label">
+                    Total Pelanggan
+                </div>
+
+                <div class="stat-number text-primary"
+                     id="totalPelanggan">
+
+                    {{ pelanggan|length if pelanggan else 0 }}
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="col-md-3 mb-3">
+
+            <div class="stat-box">
+
+                <div class="stat-label">
+                    Aktif / Lunas
+                </div>
+
+                <div class="stat-number text-success"
+                     id="totalAktif">
+
+                    0
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="col-md-3 mb-3">
+
+            <div class="stat-box">
+
+                <div class="stat-label">
+                    Belum Bayar
+                </div>
+
+                <div class="stat-number text-danger"
+                     id="totalBelumBayar">
+
+                    0
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="col-md-3 mb-3">
+
+            <div class="stat-box">
+
+                <div class="stat-label">
+                    Ditampilkan
+                </div>
+
+                <div class="stat-number text-info"
+                     id="totalDitampilkan">
+
+                    {{ pelanggan|length if pelanggan else 0 }}
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- =====================================================
+         FILTER
+         ===================================================== -->
+
+    <div class="card shadow-sm mb-3">
+
+        <div class="card-body">
+
+            <div class="row align-items-center">
+
+                <div class="col-md-5 mb-2 mb-md-0">
+
+                    <input type="text"
+                           id="searchPelanggan"
+                           class="form-control search-box"
+                           placeholder="🔎 Cari nama, paket, IP, MAC, HP...">
+
+                </div>
+
+
+                <div class="col-md-3 mb-2 mb-md-0">
+
+                    <select id="filterStatus"
+                            class="form-control">
+
+                        <option value="">
+                            Semua Status
+                        </option>
+
+                        <option value="AKTIF">
+                            Aktif
+                        </option>
+
+                        <option value="LUNAS">
+                            Lunas
+                        </option>
+
+                        <option value="ISOLIR">
+                            Isolir
+                        </option>
+
+                        <option value="BELUM BAYAR">
+                            Belum Bayar
+                        </option>
+
+                        <option value="JATUH TEMPO">
+                            Jatuh Tempo
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <div class="col-md-2 mb-2 mb-md-0">
+
+                    <select id="filterTipe"
+                            class="form-control">
+
+                        <option value="">
+                            Semua Koneksi
+                        </option>
+
+                        <option value="DHCP">
+                            DHCP
+                        </option>
+
+                        <option value="PPPOE">
+                            PPPoE
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <div class="col-md-2">
+
+                    <button type="button"
+                            class="btn btn-outline-secondary btn-block"
+                            onclick="resetFilter()">
+
+                        Reset Filter
+
+                    </button>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- =====================================================
+         TABEL
+         ===================================================== -->
+
+    <div class="card shadow-sm">
+
+        <div class="card-header bg-white">
+
+            <div class="d-flex justify-content-between align-items-center">
+
+                <strong>
+                    Daftar Pelanggan
+                </strong>
+
+                <span class="text-muted small"
+                      id="hasilFilter">
+
+                    Menampilkan semua pelanggan
+
+                </span>
+
+            </div>
+
+        </div>
+
+
+        <div class="card-body p-0">
+
+            <div class="table-responsive">
+
+                <table class="table table-bordered table-hover table-sm mb-0"
+                       id="tabelPelanggan">
+
+                    <thead class="thead-light text-center">
+
+                        <tr>
+
+                            <th style="min-width:180px;">
+                                Nama Pelanggan
+                            </th>
+
+                            <th style="min-width:130px;">
+                                Paket
+                            </th>
+
+                            <th style="min-width:120px;">
+                                Tagihan
+                            </th>
+
+                            <th style="min-width:120px;">
+                                Jatuh Tempo
+                            </th>
+
+                            <th style="min-width:110px;">
+                                Status
+                            </th>
+
+                            <th style="min-width:110px;">
+                                Koneksi
+                            </th>
+
+                            <th style="min-width:330px;">
+                                Aksi
+                            </th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody>
+
+                    {% if pelanggan %}
+
+                        {% for p in pelanggan %}
+
+                        {% set status_pelanggan =
+                            (p.status or '')|upper|trim
+                        %}
+
+                        {% set tipe_pelanggan =
+                            (p.tipe or '')|upper|trim
+                        %}
+
+                        <tr class="baris-pelanggan
+                            {% if p.source == 'mikrotik' %}
+                                table-info
+                            {% endif %}"
+
+                            data-search="
+                                {{ p.nama or '' }}
+                                {{ p.paket or '' }}
+                                {{ p.ip or '' }}
+                                {{ p.ip_address or '' }}
+                                {{ p.mac or '' }}
+                                {{ p.mac_address or '' }}
+                                {{ p.no_hp or '' }}
+                            "
+
+                            data-status="{{ status_pelanggan }}"
+
+                            data-tipe="{{ tipe_pelanggan }}">
+
+
+                            <!-- NAMA -->
+
+                            <td>
+
+                                <div class="customer-name">
+
+                                    {% if p.source == 'mikrotik' %}
+                                        🔌
+                                    {% endif %}
+
+                                    {{ p.nama or '-' }}
+
+                                </div>
+
+
+                                {% if p.no_hp %}
+
+                                    <div class="customer-type">
+                                        📱 {{ p.no_hp }}
+                                    </div>
+
+                                {% endif %}
+
+
+                                {% if p.ip or p.ip_address %}
+
+                                    <div class="customer-type">
+                                        🌐 {{ p.ip or p.ip_address }}
+                                    </div>
+
+                                {% endif %}
+
+                            </td>
+
+
+                            <!-- PAKET -->
+
+                            <td>
+
+                                {{ p.paket or '-' }}
+
+                            </td>
+
+
+                            <!-- TAGIHAN -->
+
+                            <td class="text-right">
+
+                                <strong>
+                                    Rp {{ "{:,}".format(p.harga or 0).replace(",", ".") }}
+                                </strong>
+
+                            </td>
+
+							<!-- JATUH TEMPO -->
+
+							<td class="text-center">
+
+								{% set tanggal_due = p.jatuh_tempo or p.due or '' %}
+
+								{% if tanggal_due %}
+
+									{% if '-' in tanggal_due and tanggal_due|length == 10 %}
+
+										{{ tanggal_due[8:10] }}/{{ tanggal_due[5:7] }}/{{ tanggal_due[0:4] }}
+
+									{% else %}
+
+										{{ tanggal_due }}
+
+									{% endif %}
+
+								{% else %}
+
+									<span class="text-muted">
+										-
+									</span>
+
+								{% endif %}
+
+							</td>
+
+
+                            <!-- STATUS -->
+
+                            <td class="text-center">
+
+                                {% if status_pelanggan == "LUNAS" %}
+
+                                    <span class="badge badge-success badge-status">
+                                        LUNAS
+                                    </span>
+
+                                {% elif status_pelanggan == "AKTIF" %}
+
+                                    <span class="badge badge-success badge-status">
+                                        AKTIF
+                                    </span>
+
+                                {% elif status_pelanggan == "ISOLIR" %}
+
+                                    <span class="badge badge-warning badge-status">
+                                        ISOLIR
+                                    </span>
+
+                                {% elif status_pelanggan in [
+                                    "JATUH TEMPO",
+                                    "TERLAMBAT"
+                                ] %}
+
+                                    <span class="badge badge-danger badge-status">
+                                        JATUH TEMPO
+                                    </span>
+
+                                {% else %}
+
+                                    <span class="badge badge-danger badge-status">
+                                        BELUM BAYAR
+                                    </span>
+
+                                {% endif %}
+
+                            </td>
+
+
+                            <!-- TIPE KONEKSI -->
+
+                            <td class="text-center">
+
+                                {% if tipe_pelanggan == "DHCP" %}
+
+                                    <span class="badge badge-info">
+                                        DHCP
+                                    </span>
+
+                                {% elif tipe_pelanggan == "PPPOE" %}
+
+                                    <span class="badge badge-primary">
+                                        PPPoE
+                                    </span>
+
+                                {% else %}
+
+                                    <span class="badge badge-secondary">
+                                        -
+                                    </span>
+
+                                {% endif %}
+
+                            </td>
+
+
+                            <!-- AKSI -->
+
+                            <td class="text-center">
+
+
+                                <!-- EDIT -->
+
+                                <a href="{{ url_for(
+                                    'pelanggan.pelanggan_edit',
+                                    pid=p.id
+                                ) }}"
+
+                                   class="btn btn-warning btn-sm aksi-btn"
+
+                                   title="Edit Pelanggan">
+
+                                    ✏️
+
+                                </a>
+
+
+                                <!-- INVOICE -->
+
+                                <a href="{{ url_for(
+                                    'invoice.invoice',
+                                    pid=p.id
+                                ) }}"
+
+                                   class="btn btn-info btn-sm aksi-btn"
+
+                                   title="Lihat Invoice">
+
+                                    🧾
+
+                                </a>
+
+
+                                <!-- PDF -->
+
+                                <a href="{{ url_for(
+                                    'invoice.cetak_pdf',
+                                    pid=p.id
+                                ) }}"
+
+                                   class="btn btn-secondary btn-sm aksi-btn"
+
+                                   target="_blank"
+
+                                   title="Cetak / Simpan PDF">
+
+                                    📄
+
+                                </a>
+
+
+                                <!-- THERMAL -->
+
+                                <a href="{{ url_for(
+                                    'invoice.print_thermal',
+                                    pid=p.id
+                                ) }}"
+
+                                   target="_blank"
+
+                                   class="btn btn-dark btn-sm aksi-btn"
+
+                                   title="Cetak Thermal">
+
+                                    🖨️
+
+                                </a>
+
+
+                                <!-- BAYAR -->
+
+                                <form method="POST"
+
+                                      action="{{ url_for(
+                                          'pelanggan.bayar',
+                                          pid=p.id
+                                      ) }}"
+
+                                      class="d-inline"
+
+                                      onsubmit="
+                                          return confirm(
+                                              'Proses pembayaran pelanggan ini?'
+                                          );
+                                      ">
+
+                                    <button type="submit"
+
+                                            class="btn btn-success btn-sm aksi-btn"
+
+                                            title="Bayar Tagihan">
+
+                                        💳
+
+                                    </button>
+
+                                </form>
+
+
+                                <!-- HAPUS -->
+
+                                <form method="POST"
+
+                                      action="{{ url_for(
+                                          'pelanggan.pelanggan_hapus',
+                                          pid=p.id
+                                      ) }}"
+
+                                      class="d-inline"
+
+                                      onsubmit="
+                                          return confirm(
+                                              'Yakin ingin menghapus pelanggan ini?'
+                                          );
+                                      ">
+
+                                    <button type="submit"
+
+                                            class="btn btn-danger btn-sm aksi-btn"
+
+                                            title="Hapus Pelanggan">
+
+                                        🗑️
+
+                                    </button>
+
+                                </form>
+
+
+                            </td>
+
+                        </tr>
+
+                        {% endfor %}
+
+                    {% else %}
+
+                        <tr>
+
+                            <td colspan="7">
+
+                                <div class="empty-box">
+
+                                    <div style="font-size:40px;">
+                                        👥
+                                    </div>
+
+                                    <h5>
+                                        Belum Ada Pelanggan
+                                    </h5>
+
+                                    <p class="mb-3">
+                                        Silakan tambahkan pelanggan baru
+                                        atau sinkronkan data dari MikroTik.
+                                    </p>
+
+                                    <a href="{{ url_for(
+                                        'pelanggan.pelanggan_tambah'
+                                    ) }}"
+
+                                       class="btn btn-success">
+
+                                        ➕ Tambah Pelanggan
+
+                                    </a>
+
+                                </div>
+
+                            </td>
+
+                        </tr>
+
+                    {% endif %}
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- =========================================================
+     JAVASCRIPT FILTER
+     ========================================================= -->
+
+<script>
+
+(function () {
+
+    const searchInput =
+        document.getElementById("searchPelanggan");
+
+    const statusFilter =
+        document.getElementById("filterStatus");
+
+    const tipeFilter =
+        document.getElementById("filterTipe");
+
+    const rows =
+        document.querySelectorAll(".baris-pelanggan");
+
+    const totalDitampilkan =
+        document.getElementById("totalDitampilkan");
+
+    const hasilFilter =
+        document.getElementById("hasilFilter");
+
+    const totalAktif =
+        document.getElementById("totalAktif");
+
+    const totalBelumBayar =
+        document.getElementById("totalBelumBayar");
+
+
+    function filterPelanggan() {
+
+        const keyword =
+            (searchInput.value || "")
+            .toLowerCase()
+            .trim();
+
+        const status =
+            (statusFilter.value || "")
+            .toUpperCase();
+
+        const tipe =
+            (tipeFilter.value || "")
+            .toUpperCase();
+
+
+        let tampil = 0;
+
+
+        rows.forEach(function (row) {
+
+            const text =
+                (row.dataset.search || "")
+                .toLowerCase();
+
+            const rowStatus =
+                (row.dataset.status || "")
+                .toUpperCase();
+
+            const rowTipe =
+                (row.dataset.tipe || "")
+                .toUpperCase();
+
+
+            const cocokSearch =
+                !keyword ||
+                text.includes(keyword);
+
+            const cocokStatus =
+                !status ||
+                rowStatus === status;
+
+            const cocokTipe =
+                !tipe ||
+                rowTipe === tipe;
+
+
+            if (
+                cocokSearch &&
+                cocokStatus &&
+                cocokTipe
+            ) {
+
+                row.style.display = "";
+
+                tampil++;
+
+            } else {
+
+                row.style.display = "none";
+
+            }
+
+        });
+
+
+        totalDitampilkan.textContent =
+            tampil;
+
+
+        if (
+            !keyword &&
+            !status &&
+            !tipe
+        ) {
+
+            hasilFilter.textContent =
+                "Menampilkan semua pelanggan";
+
+        } else {
+
+            hasilFilter.textContent =
+                "Menampilkan " +
+                tampil +
+                " pelanggan";
+
+        }
+
+    }
+
+
+    function hitungStatistik() {
+
+        let aktif = 0;
+        let belumBayar = 0;
+
+
+        rows.forEach(function (row) {
+
+            const status =
+                (row.dataset.status || "")
+                .toUpperCase();
+
+
+            if (
+                status === "AKTIF" ||
+                status === "LUNAS"
+            ) {
+
+                aktif++;
+
+            }
+
+
+            if (
+                status === "BELUM BAYAR" ||
+                status === "JATUH TEMPO" ||
+                status === "TERLAMBAT"
+            ) {
+
+                belumBayar++;
+
+            }
+
+        });
+
+
+        totalAktif.textContent =
+            aktif;
+
+        totalBelumBayar.textContent =
+            belumBayar;
+
+    }
+
+
+    window.resetFilter = function () {
+
+        searchInput.value = "";
+        statusFilter.value = "";
+        tipeFilter.value = "";
+
+        filterPelanggan();
+
+    };
+
+
+    searchInput.addEventListener(
+        "input",
+        filterPelanggan
+    );
+
+
+    statusFilter.addEventListener(
+        "change",
+        filterPelanggan
+    );
+
+
+    tipeFilter.addEventListener(
+        "change",
+        filterPelanggan
+    );
+
+
+    hitungStatistik();
+    filterPelanggan();
+
+})();
+
+</script>
+
+</body>
+</html>
+

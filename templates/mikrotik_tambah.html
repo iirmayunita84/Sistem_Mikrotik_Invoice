@@ -1,0 +1,140 @@
+
+{% extends "base.html" %}
+{% block content %}
+
+<div class="card card-success">
+
+  <div class="card-header">
+    <h3 class="card-title">Tambah Router MikroTik</h3>
+  </div>
+
+  <form method="post" id="formRouter">
+
+    <div class="card-body">
+
+      <!-- NAMA ROUTER -->
+      <div class="form-group">
+        <label for="name">Nama Router</label>
+
+        <input
+            type="text"
+            name="name"
+            id="name"
+            class="form-control"
+            placeholder="Contoh: Router Rumah"
+            maxlength="100"
+            autocomplete="off"
+            required>
+      </div>
+
+
+      <!-- HOST / IP -->
+      <div class="form-group">
+        <label for="host">Host / IP MikroTik</label>
+
+        <input
+            type="text"
+            name="host"
+            id="host"
+            class="form-control"
+            placeholder="Contoh: 192.168.2.1"
+            maxlength="255"
+            autocomplete="off"
+            required>
+
+        <small class="form-text text-muted">
+          Masukkan IP address atau hostname MikroTik.
+          Contoh: 192.168.2.1
+        </small>
+      </div>
+
+
+      <!-- PORT -->
+      <div class="form-group">
+        <label for="port">Port API</label>
+
+        <input
+            type="number"
+            name="port"
+            id="port"
+            class="form-control"
+            value="8728"
+            min="1"
+            max="65535"
+            required>
+
+        <small class="form-text text-muted">
+          Port API RouterOS biasanya 8728.
+        </small>
+      </div>
+
+
+      <!-- USERNAME -->
+      <div class="form-group">
+        <label for="username">Username MikroTik</label>
+
+        <input
+            type="text"
+            name="username"
+            id="username"
+            class="form-control"
+            maxlength="100"
+            autocomplete="off"
+            required>
+      </div>
+
+
+      <!-- PASSWORD -->
+      <div class="form-group">
+        <label for="password">Password MikroTik</label>
+
+        <input
+            type="password"
+            name="password"
+            id="password"
+            class="form-control"
+            maxlength="255"
+            autocomplete="new-password"
+            required>
+      </div>
+
+    </div>
+
+
+    <!-- FOOTER -->
+    <div class="card-footer">
+
+      <button
+          type="submit"
+          class="btn btn-success"
+          id="btnSimpan">
+        💾 Simpan Router
+      </button>
+
+      <a
+          href="/mikrotik"
+          class="btn btn-secondary">
+        Batal
+      </a>
+
+    </div>
+
+  </form>
+
+</div>
+
+
+<script>
+document.getElementById("formRouter").addEventListener("submit", function () {
+
+    const btn = document.getElementById("btnSimpan");
+
+    // Cegah klik simpan berkali-kali
+    btn.disabled = true;
+    btn.innerHTML = "⏳ Menyimpan...";
+
+});
+</script>
+
+{% endblock %}
+
