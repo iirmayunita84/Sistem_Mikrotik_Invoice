@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistem Mikrotik Invoice</title>
+    <style>
+		body {
+				font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+				background-color: #f4f6f8;
+				color: #333;
+				margin: 0;
+				padding: 0;
+			}
+
+			header {
+				background-color: #3399ff;
+				color: white;
+				padding: 30px 20px;
+				text-align: center;
+			}
+
+			main {
+				padding: 20px;
+				max-width: 900px;
+				margin: auto;
+			}
+
+			.download-area {
+				display: flex;
+				flex-wrap: wrap;
+				gap: 12px;
+				margin-top: 20px;
+			}
+
+			.btn {
+				padding: 12px 20px;
+				border-radius: 8px;
+				font-weight: bold;
+				text-decoration: none;
+				color: white;
+				transition: 0.3s;
+				display: inline-block;
+			}
+
+			.btn.blog {
+				background: #ff5722;
+			}
+			.btn.blog:hover {
+				background: #e64a19;
+			}
+
+			.btn.linkid {
+				background: #6a1b9a;
+			}
+			.btn.linkid:hover {
+				background: #4a148c;
+			}
+
+			.btn.github {
+				background: #24292f;
+			}
+			.btn.github:hover {
+				background: #000;
+			}
+		</style>
+</head>
+<body>
+    <header>
+        <h1>Sistem Mikrotik Invoice</h1>
+        <p>Aplikasi untuk membuat invoice dan struk pembayaran pelanggan MikroTik</p>
+    </header>
+    <main>
+        <section>
+            <h2>Deskripsi</h2>
+            <p>
+                <strong>Sistem Mikrotik Invoice</strong> adalah aplikasi desktop berbasis Python (Tkinter & ttkbootstrap) yang memudahkan pembuatan
+                invoice, struk pembayaran, dan manajemen pelanggan MikroTik. Fitur utama termasuk:
+            </p>
+            <ul>
+                <li>Membuat invoice PDF otomatis</li>
+                <li>Preview & cetak struk thermal 80mm</li>
+                <li>Edit comment pelanggan langsung ke MikroTik</li>
+                <li>Manajemen data pelanggan manual</li>
+                <li>Integrasi dengan MikroTik API (opsional)</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Cara Instalasi</h2>
+            <p>
+                1. Pastikan Python 3.x sudah terpasang.<br>
+                2. Install dependencies:
+            </p>
+            <pre><code>pip install reportlab pillow pdf2image pywin32 ttkbootstrap routeros-api</code></pre>
+            <p>
+                3. Jalankan aplikasi:<br>
+                <code>python main.py</code>
+            </p>
+        </section>
+
+		<section>
+			<h2>Akses & Download</h2>
+
+			<div class="download-area">
+
+				<a href="https://invoicemikrotik.blogspot.com"
+				   target="_blank"
+				   class="btn blog">
+				   📝 Tutorial di Blog
+				</a>
+
+				<a href="https://github.com/iirmayunita84/Sistem_Mikrotik_Invoice.git"
+				   target="_blank"
+				   class="btn github">
+				   📦 File di GitHub
+				</a>
+
+				<a href="http://lynk.id/irmayunita84/r4onnoql2vx0/checkout"
+				   target="_blank"
+				   class="btn linkid">
+				   ⬇️ Download Aplikasi
+				</a>
+
+			</div>
+		</section>
+
+
+        <section>
+            <h2>Kontak & Bantuan</h2>
+            <p>Untuk kendala atau pertanyaan, hubungi:</p>
+            <p>WA / Telepon: <strong>0821-1609-0241</strong></p>
+        </section>
+    </main>
+
+    <footer>
+        &copy; 2025 Irma | Sistem Mikrotik Invoice
+    </footer>
+</body>
+</html>

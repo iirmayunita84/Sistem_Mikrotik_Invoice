@@ -1,0 +1,38 @@
+{
+  "app": {
+    "store_name": "YUNITA.NET",
+    "store_address": "Jl. CISAAT No.30, GARUT",
+    "footer_message": "Terima kasih telah membayar tepat waktu.\nJika ada kendala hubungi WA 082116090241",
+    "logo_file": "D:/Sistem_Mikrotik_Invoice/assets/logo.bmp",
+    "qris_file": "D:/Sistem_Mikrotik_Invoice/assets/qris.png",
+    "pos_width_mm": 80,
+    "riwayat_dir": "riwayat_invoice",
+    "default_account": "router3"
+  },
+  "routers": [
+    {
+      "id": "router1",
+      "label": "MikroTik Kantor",
+      "host": "192.168.1.2",
+      "port": 8728,
+      "username": "irma",
+      "password": "yunita"
+    },
+    {
+      "id": "router2",
+      "label": "MikroTik Rumah",
+      "host": "192.168.2.1",
+      "port": 8728,
+      "username": "irma",
+      "password": "yunita"
+    },
+    {
+      "id": "router3",
+      "label": "MikroTik Cadangan",
+      "host": "192.168.2.3",
+      "port": 8728,
+      "username": "irma",
+      "password": "yunita"
+    }
+  ]
+}
